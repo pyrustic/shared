@@ -2,7 +2,7 @@
 
 `Shared` is a Python library to store, expose, read, and edit collections of data.
 
-Expose your data:
+Store your data:
 
 ```python
 from shared import Shared
@@ -13,7 +13,7 @@ shared.save()
 
 ```
 
-Read data:
+Read the data from another script:
 
 ```python
 from shared import Shared
@@ -23,7 +23,7 @@ print(shared.dict)  # {"author": "alexrustic", "year": 2020}
 
 ```
 
-Edit data:
+Since we're all consenting adults here, you can edit the data from another script:
 
 ```python
 from shared import Shared
@@ -40,22 +40,22 @@ $ shared "my-store" dict
 {"author": "alexrustic", "year": 2021}
 ```
 
-`Dict` is just one of the available collections of data:
+So far we've only played with the `dict` container. There is more to play with:
 
 ```python
 from shared import Shared
 
 shared = Shared("my-store")
-# list
+# list container
 shared.list.append("hello")
-shared.list.append("friend")
-# set
+shared.list.append("friend")  
+# set container
 shared.set = {"red", "blue"}
-
+# save
 shared.save()
 ```
 
-And yes, you can read the content from the command line interface:
+Yes, you can view previous collections from the command line interface:
 
 ```bash
 $ shared "my-store" list
@@ -65,7 +65,7 @@ $ shared "my-store" set
 {"red", "blue"}
 ```
 
-But wait... can you store binary data with `Shared` ?
+Wait... can you store binary data with `Shared` ?
 
 Yes, you can:
 
@@ -73,9 +73,10 @@ Yes, you can:
 from shared import Shared
 
 shared = Shared("my-store")
+
 with open("/home/alex/selfie.png", "rb") as file:
     data = file.read()
-    shared.add_bin("selfie", data)
+    shared.add_bin("selfie", data)  # the name of this entry is "selfie"
     
 # binary data are available in the 'bin' collection
 for name, path in shared.bin.items():
@@ -89,24 +90,25 @@ $ shared "my-store" bin "selfie" > "/home/alex/new.png"
 
 ```
 
-Or you can do the same thing but in the opposite way: store the binary data from the command line
+Or you can do the same but backwards, i.e. store the binary data from the command line:
 
 ```bash
 $ shared "my-store" bin "selfie" "/home/alex/selfie.png"
 
 ```
 
-Then programmatically copy this binary data into an arbitrary file:
+Then programmatically copy this binary data to an arbitrary file:
 
 ```python
 from shared import Shared
 from shutil import copyfile
 
 shared = Shared("my-store")
-src = shared.bin["selfie"]
-dst = "/home/alex/new.png"
+source = shared.bin["selfie"]  # the source path
+destination = "/home/alex/new.png"
+
 # copy the content from src to dst
-copyfile(src, dst)
+copyfile(source, destination)
 
 ```
 
@@ -123,19 +125,26 @@ shared.del_bin("selfie")
 shared.del_bin()
 ```
 
-You can decide to be a badass and delete the whole store:
+You can decide to be a badass and delete the store:
 
 ```python
 from shared import Shared
 
 shared = Shared("my-store")
-shared.del_store()
+shared.del_store()  # data collections, binary data, and meta data are gone
+
 ```
 
-Do you like this library ? Guess what, it's available on PyPI:
+When you call the `save` method, only data collections that have been modified are saved. To do this, `Shared` uses [Probed](https://github.com/pyrustic/probed) data collections. `Probed` is the library that will change the way you interact with Python collections.
+
+
+Discover [Probed](https://github.com/pyrustic/probed) !
+
+
+Do you like `Shared` ? Guess what, it's available on PyPI:
 
 ```bash
-pip install shared
+$ pip install shared
 ```
 
-No dependency... No voodoo magic... Be curious, explore the source code to discover the rest ;)
+Join the [Discord](https://discord.gg/fSZ6nxzVd6) !

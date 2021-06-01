@@ -2,13 +2,12 @@ import sys
 import os
 import os.path
 import pprint
-from shared import Shared, version
+from shared import Shared
 
 
 HELP = """\
 
 Welcome to Shared !
-Version: {version}
 
 https://github.com/pyrustic/shared
 
@@ -87,7 +86,7 @@ def display(text):
 
 
 def help_handler(*args):
-    print(HELP.format(version=version.__version__))
+    print(HELP)
 
 
 def dict_handler(store, *args):
@@ -107,6 +106,9 @@ def list_handler(store, *args):
         print(INCORRECT_USAGE)
         return
     shared = Shared(store, readonly=True)
+    if not shared.exists:
+        print("This store doesn't exist !")
+        return
     data = shared.list
     if data:
         display(shared.list)
@@ -119,6 +121,9 @@ def set_handler(store, *args):
         print(INCORRECT_USAGE)
         return
     shared = Shared(store, readonly=True)
+    if not shared.exists:
+        print("This store doesn't exist !")
+        return
     data = shared.set
     if data:
         display(shared.set)
@@ -129,6 +134,9 @@ def set_handler(store, *args):
 def bin_handler(store, *args):
     shared = Shared(store, readonly=True)
     if not args:
+        if not shared.exists:
+            print("This store doesn't exist !")
+            return
         data = shared.bin
         if data:
             display(shared.bin)
@@ -136,10 +144,13 @@ def bin_handler(store, *args):
             print("- Empty collection -")
         return
     elif len(args) == 1:  # output binary data stored under a name
+        if not shared.exists:
+            print("This store doesn't exist !")
+            return
         name = args[0]
         path = shared.bin.get(name, None)
         if not path:
-            print("This name doesn't exist in the collection !")
+            print("This name doesn't exist in the bin collection !")
         elif os.path.exists(path):
             with open(path, "rb") as file:
                 data = file.read()
@@ -161,7 +172,7 @@ def bin_handler(store, *args):
 def main():
     args = sys.argv[1:]
     if not args or len(args) == 1:
-        if args and args[0] == "help":
+        if not args or (args and args[0] == "help"):
             help_handler()
         else:
             print("* Unknown command - Please type 'help' *")
