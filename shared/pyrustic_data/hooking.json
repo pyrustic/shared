@@ -1,0 +1,14 @@
+{
+    "ante_build": [
+        "shared.hooking.ante_build_hook"
+    ],
+    "ante_release": [
+        "shared.hooking.ante_release_hook"
+    ],
+    "post_build": [
+        "shared.hooking.post_build_hook"
+    ],
+    "post_release": [
+        "shared.hooking.post_release_hook"
+    ]
+}
