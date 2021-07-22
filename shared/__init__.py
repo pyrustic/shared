@@ -1,261 +1,272 @@
 import os
 import os.path
-import shutil
 import json
 import time
+import shutil
 from probed import ProbedDict, ProbedList, ProbedSet
 
 
-DEFAULT_PATH = os.path.join(os.path.expanduser("~"),
-                            "PyrusticData", "shared")
+DEFAULT_LOCATION = os.path.join(os.path.expanduser("~"),
+                                "PyrusticData", "shared")
 
 
 class Shared:
-    def __init__(self, store, path=DEFAULT_PATH,
-                 readonly=False):
+    def __init__(self, store, readonly=False,
+                 autosave=False, location=DEFAULT_LOCATION):
         """
-        An easy and intuitive way to store your data collections !
-
-        Parameters:
-            - store: str, the name of the store, just give the app name
-            - path: str, the directory where to save data, by default
-            it is the path ~/PyrusticData/datastore
-            - readonly: bool
+        - store: the name of the store
+        - readonly: boolean, readonly mode
+        - autosave: boolean, auto-save mode
+        - location: the directory where stores can be created
         """
         self._store = store
-        self._path = path
         self._readonly = readonly
-        self._dict = ProbedDict()
-        self._list = ProbedList()
-        self._set = ProbedSet()
-        self._bin = ProbedDict()
+        self._autosave = autosave
+        self._location = location
         self._store_path = None
-        self._dict_json_filename = None
-        self._list_json_filename = None
-        self._set_json_filename = None
-        self._bin_json_filename = None
+        self._meta = dict()
+        self._meta_filename = None
+        self._data_path = None
+        self._cache = dict()
+        self._deleted = False
         self._setup()
-
-    # ======= PROPERTIES =======
 
     @property
     def store(self):
         return self._store
 
     @property
-    def path(self):
-        return self._path
-
-    @property
     def readonly(self):
         return self._readonly
 
     @property
-    def exists(self):
-        if os.path.exists(self._store_path):
-            return True
-        return False
+    def autosave(self):
+        return self._autosave
 
     @property
-    def dict(self):
-        return self._dict
-
-    @dict.setter
-    def dict(self, val):
-        if not isinstance(val, ProbedDict):
-            val = ProbedDict(items=val)
-        self._dict = val
-        self._dict.changed = True
+    def location(self):
+        return self._location
 
     @property
-    def list(self):
-        return self._list
+    def info(self):
+        """
+        Returns a dictionary of entries and their container types
+        Example: {"entry_1": "dict", "entry_2": "bin", "entry_3": "set"}
+        """
+        self._load_meta()
+        cache = dict()
+        for key, value in self._meta.items():
+            container, _ = value
+            cache[key] = container
+        return cache
 
-    @list.setter
-    def list(self, val):
-        if not isinstance(val, ProbedList):
-            val = ProbedList(items=val)
-        self._list = val
-        self._list.changed = True
-
-    @property
-    def set(self):
-        return self._set
-
-    @set.setter
-    def set(self, val):
-        if not isinstance(val, ProbedSet):
-            val = ProbedSet(items=val)
-        self._set = val
-        self._set.changed = True
-
-    @property
-    def bin(self):
-        """ Getter only + Returns a copy """
-        return self._bin.copy()
-
-    # ======= PUBLIC METHODS =======
-
-    def reload(self):
-        if not os.path.exists(self._store_path):
+    def set(self, name, data):
+        """
+        Set an entry.
+        Data should be a dict, a list, a set or a binary data.
+        This method will return a path if the entry is a binary data.
+        SharedDict, SharedList, SharedSet are returned respectively if the entry
+        requested is a dict, a list or a set.
+        You can call the method "save" on the instances of SharedDict, SharedList,
+        or SharedSet.
+        """
+        if self._deleted:
             return
-        # Load data from json then populate variables
-        cache = self._json_load(self._dict_json_filename)
-        self._dict = ProbedDict(items=cache)
-        cache = self._json_load(self._list_json_filename)
-        self._list = ProbedList(items=cache)
-        cache = set(self._json_load(self._set_json_filename))
-        self._set = ProbedSet(items=cache)
-        cache = self._json_load(self._bin_json_filename)
-        self._bin = ProbedDict(items=cache)
-
-    def save(self):
         if self._readonly:
             raise ReadonlyError
-        if self._dict.changed:
-            self._save_dict()
-            self._dict.changed = False
-        if self._list.changed:
-            self._save_list()
-            self._list.changed = False
-        if self._set.changed:
-            self._save_set()
-            self._set.changed = False
+        container = self._get_container(data)
+        container = "bin" if container is None else container
+        return self._save(name, container, data)
 
-    def add_bin(self, name, data):
+    def get(self, name):
+        """
+        This method returns None if the entry isn't in the store.
+        A path is returned if the entry requested exists and is a binary data.
+        SharedDict, SharedList, SharedSet are returned respectively if the entry
+        requested is a dict, a list or a set
+        """
+        if self._deleted:
+            return
+        self._load_meta()
+        cache = self._meta.get(name)
+        if cache is None:
+            return None
+        container, filename = cache
+        if container == "bin":
+            return filename
+        data = json_load(filename)
+        collection = self._convert_collection(container, data)
+        self._bind_save_method(name, container, collection)
+        return collection
+
+    def delete(self, *names):
+        """
+        This method delete the store if there isn't any argument.
+        Else, the arguments are the entries to delete.
+        Returns a boolean or raise ReadonlyError
+        """
+        if self._deleted:
+            return
         if self._readonly:
             raise ReadonlyError
-        bin_dir = os.path.join(self._store_path, "bin")
-        if not os.path.exists(bin_dir):
-            os.makedirs(bin_dir)
-        if name in self._bin:
-            filename = self._bin[name]
-        else:
-            filename = self._new_bin_filename(bin_dir)
-        with open(filename, "wb") as file:
-            file.write(data)
-        self._bin[name] = filename
-        self._save_bin()
-
-    def del_bin(self, name=None):
-        if self._readonly:
-            raise ReadonlyError
-        if name is None:
-            for name, path in self._bin.items():
-                self._del_bin(path)
-            self._bin = dict()
-        else:
-            try:
-                self._del_bin(self._bin[name])
-                del self._bin[name]
-            except KeyError as e:
-                pass
-        self._json_dump(self._bin_json_filename, self._bin)
-
-    def del_store(self):
-        if self._readonly:
-            raise ReadonlyError
-        if self._deletable_store():
+        if not legal_store(self._store_path):
+            return False
+        if not names:  # delete store
             shutil.rmtree(self._store_path)
-
-    # ======= PRIVATE =======
+            self._deleted = True
+        else:
+            self._load_meta()
+            for name in names:
+                cache = self._meta.get(name)
+                if not cache:
+                    continue
+                del self._meta[name]
+                _, filename = cache
+                if os.path.isfile(filename):
+                    os.remove(filename)
+            json_dump(self._meta_filename, self._meta)
+        return True
 
     def _setup(self):
-        """
-        Make store directory, init json files,
-        set instances json filenames
-        """
-        self._store_path = os.path.join(self._path, self._store)
+        self._store_path = os.path.join(self._location, self._store)
+        self._meta_filename = os.path.join(self._store_path, "meta")
+        self._data_path = os.path.join(self._store_path, "data")
         self._create_store()
-        self.reload()
+        self._load_meta()
 
     def _create_store(self):
-        if not self._readonly and not os.path.exists(self._store_path):
-            os.makedirs(self._store_path)
-            # create bin folder
-            os.mkdir(os.path.join(self._store_path, "bin"))
-            # add pyrustic file
-            cache = os.path.join(self._store_path, "pyrustic")
-            with open(cache, "w") as file:
-                pass
-            # add shared file
-            cache = os.path.join(self._store_path, "shared")
-            with open(cache, "w") as file:
-                pass
-        cache = [("dict", dict()), ("list", list()),
-                 ("set", dict()), ("bin", dict())]
-        for container, default in cache:
-            filename = os.path.join(self._store_path,
-                                    "{}.json".format(container))
-            if not os.path.exists(filename) and not self._readonly:
-                self._json_dump(filename, default)
-            if container == "dict":
-                self._dict_json_filename = filename
-            elif container == "list":
-                self._list_json_filename = filename
-            elif container == "set":
-                self._set_json_filename = filename
-            elif container == "bin":
-                self._bin_json_filename = filename
-            else:
-                raise Error("Unknown category {}".format(container))
+        if self._readonly or legal_store(self._store_path):
+            return
+        # create store
+        os.makedirs(self._store_path)
+        # create data folder
+        os.mkdir(os.path.join(self._store_path, "data"))
+        # create meta file
+        json_dump(self._meta_filename, dict())
+        # add 'pyrustic' empty file (signature)
+        cache = os.path.join(self._store_path, "pyrustic")
+        with open(cache, "w") as file:
+            pass
+        # add 'shared' empty file (signature)
+        cache = os.path.join(self._store_path, "shared")
+        with open(cache, "w") as file:
+            pass
+
+    def _load_meta(self):
+        if not os.path.exists(self._store_path):
+            return
+        self._meta = json_load(self._meta_filename)
+
+    def _gen_filename(self, container):
+        while True:
+            timestamp = int(time.time())
+            cache = "{}-{}".format(container, str(timestamp))
+            filename = os.path.join(self._data_path, cache)
+            if not os.path.exists(filename):
+                return filename
+
+    def _save(self, name, container, data):
+        cache = self._meta.get(name)
+        if cache is None:
+            filename = self._gen_filename(container)
+        else:
+            _, filename = cache
+        # save metadata
+        self._meta[name] = (container, filename)
+        self._save_meta()
+        if container == "set":
+            data = self._set_to_dict(data)
+        if container in ("dict", "list", "set"):
+            json_dump(filename, data)
+            if (isinstance(data, SharedDict)
+                    or isinstance(data, SharedList)
+                    or isinstance(data, SharedSet)):
+                return data
+            cache = self._convert_collection(container, data)
+            self._bind_save_method(name, container, cache)
+            return cache
+        elif container == "bin":
+            with open(filename, "wb") as file:
+                file.write(data)
+            return filename
+        else:
+            raise Error("Unknown container '{}'.".format(container))
+
+    def _save_meta(self):
+        json_dump(self._meta_filename, self._meta)
+
+    def _get_container(self, data):
+        result = None
+        if isinstance(data, dict):
+            result = "dict"
+        elif isinstance(data, list):
+            result = "list"
+        elif isinstance(data, set):
+            result = "set"
+        return result
+
+    def _convert_collection(self, container, data):
+        if container == "dict":
+            cache = SharedDict(items=data)
+        elif container == "list":
+            cache = SharedList(items=data)
+        elif container == "set":
+            cache = SharedSet(items=data)
+        else:
+            raise Error("Unknown container '{}'.".format(container))
+        return cache
+
+    def _bind_save_method(self, name, container, collection):
+        if self._readonly:
+            return
+        collection.save = (lambda self=self, name=name,
+                                  container=container,
+                                  collection=collection:
+                           self._save(name, container, collection))
+        if self._autosave:
+            collection.on_change = (lambda info: info.collection.save())
 
     def _set_to_dict(self, data):
         return {item: None for item in data}
 
-    def _save_dict(self):
-        self._json_dump(self._dict_json_filename, self._dict)
 
-    def _save_list(self):
-        self._json_dump(self._list_json_filename, self._list)
+class SharedDict(ProbedDict):
+    def save(self):
+        raise ReadonlyError
 
-    def _save_set(self):
-        data = self._set_to_dict(self._set)
-        self._json_dump(self._set_json_filename, data)
 
-    def _save_bin(self):
-        self._json_dump(self._bin_json_filename, self._bin)
+class SharedList(ProbedList):
+    def save(self):
+        raise ReadonlyError
 
-    def _del_bin(self, path):
-        if path and os.path.isfile(path):
-            # let's be sure before deleting this poor file ;)
-            if self._deletable_bin(path):
-                os.remove(path)
-            else:
-                raise Error("Illegal filename {}".format(path))
 
-    def _deletable_bin(self, path):
-        basename = os.path.basename(path)
-        seq = basename.split("-")
-        if len(seq) == 2 and seq[0] == "bin":
-            return True
+class SharedSet(ProbedSet):
+    def save(self):
+        raise ReadonlyError
+
+
+def json_dump(json_filename, data):
+    with open(json_filename, "w") as file:
+        json.dump(data, file, indent=4, sort_keys=True)
+
+
+def json_load(json_filename):
+    with open(json_filename, "r") as file:
+        data = json.load(file)
+    return data
+
+
+def legal_store(path):
+    pyrustic_file = os.path.join(path, "pyrustic")
+    shared_file = os.path.join(path, "shared")
+    meta_file = os.path.join(path, "meta")
+    data_folder = os.path.join(path, "data")
+    for item in (pyrustic_file, shared_file, meta_file):
+        if not os.path.isfile(item):
+            return False
+    if not os.path.isdir(data_folder):
         return False
-
-    def _deletable_store(self):
-        store_content = os.listdir(self._store_path)
-        important_items = ("pyrustic", "shared", "bin", "bin.json"
-                           "dict.json", "list.json", "set.json")
-        for item in important_items:
-            if item not in store_content:
-                return False
-        return True
-
-    def _json_load(self, json_filename):
-        with open(json_filename, "r") as file:
-            data = json.load(file)
-        return data
-
-    def _json_dump(self, json_filename, data):
-        with open(json_filename, "w") as file:
-            json.dump(data, file, indent=4, sort_keys=True)
-
-    def _new_bin_filename(self, bin_dir):
-        while True:
-            timestamp = int(time.time())
-            var = "bin-{}".format(str(timestamp))
-            filename = os.path.join(bin_dir, var)
-            if not os.path.exists(filename):
-                return filename
+    return True
 
 
 class Error(Exception):
