@@ -2,7 +2,7 @@ import sys
 import os
 import os.path
 import pprint
-from shared import Shared, DEFAULT_LOCATION, legal_store, json_load
+from shared import Store, DEFAULT_LOCATION, valid_store, json_load
 
 
 HELP = """\
@@ -76,7 +76,7 @@ the program will fall back to the default directory
     Update the content of an entry
     ==============================
     store <store-name> <entry-name> <type> <new-content-filename>
-    Legal types: dict list set bin
+    Valid types: dict list set bin
     
     Copy the content of an entry
     ============================
@@ -104,21 +104,21 @@ def new_handler(*args):
     if len(args) > 1:
         print(INCORRECT_USAGE_ERROR)
         return
-    store = args[0]
-    Shared(store, location=os.getcwd())
-    print("Successfully created the store '{}' !".format(store))
+    store_name = args[0]
+    Store(store_name, location=os.getcwd())
+    print("Successfully created the store '{}' !".format(store_name))
 
 
 def del_handler(*args):
     if not args:
         print(MISSING_STORE_NAME_ERROR)
         return
-    store = args[0]
-    location = shared_location(store)
+    store_name = args[0]
+    location = store_location(store_name)
     if not location:
         return
-    shared = Shared(store, location=location)
-    shared.delete(*args[1:])
+    store = Store(store_name, location=location)
+    store.delete(*args[1:])
     print("Successfully deleted !")
 
 
@@ -126,40 +126,40 @@ def store_handler(*args):
     if not args:
         print(MISSING_STORE_NAME_ERROR)
         return
-    store = args[0]
-    location = shared_location(store)
+    store_name = args[0]
+    location = store_location(store_name)
     if not location:
         return
-    shared = Shared(store, location=location)
+    store = Store(store_name, location=location)
     n = len(args[1:])
     if n == 0:  # Show store content
-        show_store_content(shared, location)
+        show_store_content(store, location)
     elif n == 1:  # Show entry content
         entry = args[1]
-        show_entry_content(shared, entry)
+        show_entry_content(store, entry)
     elif n == 3:  # Update the content of an entry
         entry, container, source_filename = args[1:]
-        update_entry_content(shared, entry, container,
+        update_entry_content(store, entry, container,
                              source_filename)
     else:
         print(INCORRECT_USAGE_ERROR)
 
 
-def show_store_content(shared, location):
-    if not shared.info:
+def show_store_content(store, location):
+    if not store.info:
         print("- Empty store -")
         return
     print("{}".format(location))
-    for name, container in shared.info.items():
+    for name, container in store.info.items():
         print("- {} ({})".format(name, container))
 
 
-def show_entry_content(shared, entry):
-    data = shared.get(entry)
+def show_entry_content(store, entry):
+    data = store.get(entry)
     if data is None:
         print("- This entry doesn't exist -")
         return
-    container = shared.info[entry]
+    container = store.info[entry]
     if container == "bin":
         if not os.path.exists(data):
             print("Error: Missing binary file '{}'".format(data))
@@ -171,7 +171,7 @@ def show_entry_content(shared, entry):
         display(data)
 
 
-def update_entry_content(shared, entry, container,
+def update_entry_content(store, entry, container,
                          source_filename):
     if not os.path.exists(source_filename):
         print("Error: Non existent filename '{}'.".format(source_filename))
@@ -184,25 +184,25 @@ def update_entry_content(shared, entry, container,
             return
         if container == "set":
             data = set(data)
-        shared.set(entry, data)
+        store.set(entry, data)
         print("Successfully updated the entry '{}' !".format(entry))
     elif container == "bin":
         with open(source_filename, "rb") as file:
             data = file.read()
-            shared.set(entry, data)
+            store.set(entry, data)
         print("Successfully updated the entry '{}' !".format(entry))
     else:
         print("Error: Unknown container type '{}'.".format(container))
 
 
-def shared_location(store):
+def store_location(store_name):
     location = os.getcwd()
-    store_path = os.path.join(location, store)
-    if not legal_store(store_path):
+    store_path = os.path.join(location, store_name)
+    if not valid_store(store_path):
         location = DEFAULT_LOCATION
-        store_path = os.path.join(location, store)
-        if not legal_store(store_path):
-            print("Error: The store '{}' doesn't exist.".format(store))
+        store_path = os.path.join(location, store_name)
+        if not valid_store(store_path):
+            print("Error: The store '{}' doesn't exist.".format(store_name))
             location = None
     return location
 
@@ -226,4 +226,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

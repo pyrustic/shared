@@ -1,5 +1,5 @@
 
-Back to [Reference Overview](https://github.com/pyrustic/shared/blob/master/docs/reference/README.md)
+Back to [Reference Overview](https://github.com/pyrustic/shared/blob/master/docs/reference/README.md#readme)
 
 # shared.\_\_main\_\_
 
@@ -9,15 +9,18 @@ Back to [Reference Overview](https://github.com/pyrustic/shared/blob/master/docs
 
 
 ```python
+DEFAULT_LOCATION = "/home/alex/PyrusticData/shared"
+
 HELP = "
 Welcome to Shared !
-
 https://github.com/pyrustic/shared
+
+Shared is part of the Pyrustic Open Ecosystem
+https://pyrustic.github.io
 
 
 Description
 ===========
-
 Shared is a Python library to store, expose,
 read, and edit collections of data.
 
@@ -26,60 +29,69 @@ This is the command line interface.
 
 Commands
 ========
+There are 3 commands available:
 
-Available commands are:
-    dict list set bin
-
-    
-<store> dict
-============
-
-This command prints the content of the dict collection in this store.
-You can't edit the content via the command line interface.
+    new del store
 
 
-<store> list
-============
-
-This command prints the content of the list collection in this store.
-You can't edit the content via the command line interface.
-
-
-<store> set
-===========
-
-This command prints the content of the set collection in this store.
-You can't edit the content via the command line interface.
-
-
-<store> bin
-===========
-
-This command prints information about the collection of binary data in this store.
-
-
-<store> bin <name> <filename>
-=============================
-
-Store the content of filename under a name in this store.
-
-Example:
-
-    "store" bin "icon" "/home/alex/python-icon.png"
-
-
-<store> bin <name>
+Create a new store
 ==================
+The command 'new' creates a new store in the
+current working directory.
 
-Outputs the binary data stored under this name from this store.
+    Create the store
+    ================
+    new <store-name>
 
-Example:
 
-    "store" bin "icon" > "/home/alex/new-icon.png"
+Delete a store
+==============
+The command 'del' deletes the store located in
+the current working directory or a specific entry.
+
+    Delete the store
+    ================
+    del <store-name>
+    
+    Delete a specific entry
+    =======================
+    del <store-name> <entry-name>
+    
+    Delete multiple entries
+    =======================
+    del <store-name> <entry-name> <entry-name> ...
+
+
+Read and write
+==============
+The command 'store' allows you to access the store
+located in the current working directory.
+If the store isn't in the current working directory,
+the program will fall back to the default directory 
+'~/PyrusticData/shared'.
+
+    Content of the store
+    ====================
+    store <store-name>
+    
+    Content of an entry
+    ===================
+    store <store-name> <entry-name>
+    
+    Update the content of an entry
+    ==============================
+    store <store-name> <entry-name> <type> <new-content-filename>
+    Valid types: dict list set bin
+    
+    Copy the content of an entry
+    ============================
+    store <store-name> <entry-name> > <destination-filename>
 
 "
 
-INCORRECT_USAGE = "Incorrect usage of the command."
+INCORRECT_USAGE_ERROR = "Error: Incorrect usage of the command."
+
+MISSING_STORE_NAME_ERROR = "Error: Missing store name."
 
 ```
 
@@ -87,18 +99,7 @@ INCORRECT_USAGE = "Incorrect usage of the command."
 
 ```python
 
-def bin_handler(store, *args):
-    """
-    
-    """
-
-```
-
-<br>
-
-```python
-
-def dict_handler(store, *args):
+def del_handler(*args):
     """
     
     """
@@ -131,17 +132,6 @@ def help_handler(*args):
 
 ```python
 
-def list_handler(store, *args):
-    """
-    
-    """
-
-```
-
-<br>
-
-```python
-
 def main():
     """
     
@@ -153,7 +143,62 @@ def main():
 
 ```python
 
-def set_handler(store, *args):
+def new_handler(*args):
+    """
+    
+    """
+
+```
+
+<br>
+
+```python
+
+def show_entry_content(store, entry):
+    """
+    
+    """
+
+```
+
+<br>
+
+```python
+
+def show_store_content(store, location):
+    """
+    
+    """
+
+```
+
+<br>
+
+```python
+
+def store_handler(*args):
+    """
+    
+    """
+
+```
+
+<br>
+
+```python
+
+def store_location(store_name):
+    """
+    
+    """
+
+```
+
+<br>
+
+```python
+
+def update_entry_content(store, entry, container, source_filename):
     """
     
     """
