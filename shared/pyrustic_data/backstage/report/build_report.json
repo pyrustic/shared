@@ -1,1 +1,8 @@
-[]
+[
+    {
+        "app_version": "0.0.5",
+        "released": true,
+        "timestamp": 1630530228,
+        "wheel_asset": "shared-0.0.5-py3-none-any.whl"
+    }
+]

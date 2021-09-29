@@ -69,7 +69,7 @@ class Jason:
         except FileExistsError:
             pass
         self._filename = os.path.join(self._location,
-                                      "{}.json".format(self._name))
+                                      self._name)
         if os.path.isfile(self._filename):
             data = json_load(self._filename)
         else:
@@ -345,74 +345,6 @@ class Store:
             filename = self._get_filename(file_id)
             if not os.path.exists(filename):
                 return file_id
-
-
-class Config(ProbedDict):
-    def __init__(self, name, *, readonly=False,
-                 autosave=False, default=None,
-                 location=DEFAULT_LOCATION):
-        self.__name = name
-        self.__readonly = readonly
-        self.__autosave = autosave
-        self.__location = location
-        self.__new = False
-        self.__deleted = False
-        self.__filename = os.path.join(location,
-                                       "{}.json".format(name))
-        if os.path.isfile(self.__filename):
-            data = json_load(self.__filename)
-        else:
-            data = default if default else dict()
-            json_dump(self.__filename, data, pretty=True)
-            self.__new = True
-        super().__init__(items=data)
-        if not self.__readonly and self.__autosave:
-            self.on_change = lambda info: info.collection.save()
-
-    @property
-    def name(self):
-        return self.__name
-
-    @property
-    def readonly(self):
-        return self.__readonly
-
-    @property
-    def autosave(self):
-        return self.__autosave
-
-    @property
-    def location(self):
-        return self.__location
-
-    @property
-    def new(self):
-        """ Returns True if this store is newly created, else return False """
-        return self.__new
-
-    @property
-    def deleted(self):
-        return self.__deleted
-
-    def save(self):
-        """ Save the config """
-        if self.__deleted:
-            raise JasonDeletedError
-        if self.__readonly:
-            raise ReadonlyError
-        json_dump(self.__filename, self, pretty=True)
-
-    def delete(self):
-        """ """
-        if self.__deleted:
-            raise JasonDeletedError
-        if self.__readonly:
-            raise ReadonlyError
-        if not valid_jason(self.__filename):
-            return False
-        os.remove(self.__filename)
-        self.__deleted = True
-        return True
 
 
 class SharedDict(ProbedDict):

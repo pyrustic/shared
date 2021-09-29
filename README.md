@@ -22,7 +22,7 @@ from shared import Jason
 
 
 # access 'my-data.json'
-jason = Jason("my-data")
+jason = Jason("my-data.json")
 # let's initialize the content of 'my-data'
 if jason.new:
     jason.data = {"name": "alex", "job": "angelist"}
@@ -40,7 +40,7 @@ from shared import Jason
 DEFAULT_DATA = {"name": "alex", "job": "angelist"}
 
 # access 'my-data.json'
-jason = Jason("my-data", default=DEFAULT_DATA)
+jason = Jason("my-data.json", default=DEFAULT_DATA)
 
 # jason.data is either an instance of
 # shared.SharedDict or shared.SharedList
@@ -53,7 +53,7 @@ data["job"] = "evangelist"
 data.save()  # persisted !
 
 ```
-By default, the `json` files are saved in the in `$HOME/PyrusticData/shared`. You can change the location to fit your needs:
+By default, the `json` files are saved in `$HOME/PyrusticData/shared`. You can change the location to fit your needs:
 
 ```python
 from shared import Jason
@@ -61,7 +61,7 @@ from shared import Jason
 LOCATION = "/home/alex/app-data"
 
 # access 'my-data.json'
-jason = Jason("my-data", location=LOCATION, readonly=True)
+jason = Jason("my-data.json", location=LOCATION, readonly=True)
 
 # when you set readonly to True, you can't anymore edit the content !
 
@@ -72,7 +72,7 @@ from shared import Jason
 
 
 # access 'my-config.json'
-jason = Jason("my-config", autosave=True, default=[])
+jason = Jason("my-config.json", autosave=True, default=[])
 
 # when you set autosave to True, you don't anymore need
 # to call the method .save() !
