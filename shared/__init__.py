@@ -1,3 +1,4 @@
+"""Main module where are defined the classes Jason and Store"""
 import os
 import os.path
 import time
@@ -11,9 +12,25 @@ DEFAULT_LOCATION = os.path.join(os.path.expanduser("~"),
 
 
 class Jason:
+    """
+    Definition of the class Jason
+    """
     def __init__(self, name, *, readonly=False,
                  autosave=False, default=None,
                  location=DEFAULT_LOCATION):
+        """
+        Init.
+
+        [parameters]
+        - name: string, the name of the JSON file. Example: "data.json"
+        - readonly: boolean to say if you want to open this JSON file in readonly mode or not
+        - autosave: boolean to say if you want to activate the autosave feature or not
+        - default: default value for this JSON file. It can be None, a dict or a list.
+        If the JSON file is newly created, the default value will populate it.
+        - location: the directory where you want to store the JSON file.
+        By default, the directory is "$HOME/PyrusticData/shared"
+
+        """
         self._name = name
         self._readonly = readonly
         self._autosave = autosave
@@ -27,14 +44,23 @@ class Jason:
 
     @property
     def name(self):
+        """
+        Return the name of the JSON file
+        """
         return self._name
 
     @property
     def data(self):
+        """
+        Return the contents of the JSON file
+        """
         return self._data
 
     @data.setter
     def data(self, val):
+        """
+        Set the contents of the JSON file
+        """
         if self._deleted:
             raise JasonDeletedError
         if self._readonly:
@@ -44,26 +70,66 @@ class Jason:
 
     @property
     def readonly(self):
+        """
+        Return the readonly boolean state
+        """
         return self._readonly
 
     @property
     def autosave(self):
+        """
+        Return the autosave boolean state
+        """
         return self._autosave
 
     @property
     def location(self):
+        """
+        Return the value of the location variable
+        """
         return self._location
 
     @property
     def new(self):
-        """ Returns True if this json file is newly created, else return False """
+        """
+        Returns True if this JSON file is newly created, else return False
+        """
         return self._new
 
     @property
     def deleted(self):
+        """
+        Return True if this JSON file is deleted else return False
+        """
         return self._deleted
 
+    def save(self):
+        """
+        Write the contents of the property 'data' in the JSON file
+        """
+        if self._deleted:
+            raise JasonDeletedError
+        if self._readonly:
+            raise ReadonlyError
+        json_dump(self._filename, self._data, pretty=True)
+
+    def delete(self):
+        """
+        This method delete the Jason file.
+        Returns a boolean or raise ReadonlyError
+        """
+        if self._deleted:
+            raise JasonDeletedError
+        if self._readonly:
+            raise ReadonlyError
+        if not valid_jason(self._filename):
+            return False
+        os.remove(self._filename)
+        self._deleted = True
+        return True
+
     def _setup(self):
+        # TODO: if location is None, so self._name is path to file
         try:
             os.makedirs(self._location)
         except FileExistsError:
@@ -94,37 +160,22 @@ class Jason:
         if self._autosave:
             self._data.on_change = (lambda info: info.collection.save())
 
-    def save(self):
-        if self._deleted:
-            raise JasonDeletedError
-        if self._readonly:
-            raise ReadonlyError
-        json_dump(self._filename, self._data, pretty=True)
-
-    def delete(self):
-        """
-        This method delete the Jason file.
-        Returns a boolean or raise ReadonlyError
-        """
-        if self._deleted:
-            raise JasonDeletedError
-        if self._readonly:
-            raise ReadonlyError
-        if not valid_jason(self._filename):
-            return False
-        os.remove(self._filename)
-        self._deleted = True
-        return True
-
 
 class Store:
+    """
+    Definition of the class Store
+    """
     def __init__(self, name, *, readonly=False,
                  autosave=False, location=DEFAULT_LOCATION):
         """
+        Init.
+
+        [parameters]
         - name: str, the name of the store
         - readonly: bool, readonly mode
         - autosave: bool, auto-save mode
-        - location: str, the directory where stores will be created
+        - location: str, the directory where stores will be created.
+        By default, this directory is '$HOME/PyrusticData/shared'
         """
         self._name = name
         self._readonly = readonly
@@ -140,18 +191,30 @@ class Store:
 
     @property
     def name(self):
+        """
+        Return the name of the store
+        """
         return self._name
 
     @property
     def readonly(self):
+        """
+        Return the state of the readonly boolean
+        """
         return self._readonly
 
     @property
     def autosave(self):
+        """
+        Return the state of the autosave boolean
+        """
         return self._autosave
 
     @property
     def location(self):
+        """
+        Return the location of the store
+        """
         return self._location
 
     @property
@@ -169,21 +232,30 @@ class Store:
 
     @property
     def new(self):
-        """ Returns True if this store is newly created, else return False """
+        """
+        Returns True if this store is newly created, else return False
+        """
         return self._new
 
     @property
     def deleted(self):
-        """ Returns True if this store has been deleted through this object """
+        """
+        Returns True if this store has been deleted through this object
+        """
         return self._deleted
 
     def set(self, name, data):
         """
         Set an entry.
-        Data should be a dict, a list, a set or a binary data.
+
+        [parameters]
+        - name: str, the name of the entry
+        - data: a dict, a list, a set or binary data.
+
+        [return value]
         This method will return a path if the entry is a binary data.
         SharedDict, SharedList, SharedSet are returned respectively if the entry
-        requested is a dict, a list or a set.
+        is a dict, a list or a set.
         You can call the method "save" on the instances of SharedDict, SharedList,
         or SharedSet.
         """
@@ -196,6 +268,13 @@ class Store:
 
     def get(self, name, default=None):
         """
+        Get an entry.
+
+        [parameters]
+        - name: the name of the entry.
+        - default: a dict, a list, a set or binary data to return if the entry doesn't exist.
+
+        [return value]
         This method returns None if the entry isn't in the store.
         A path is returned if the entry requested exists and is a binary data.
         SharedDict, SharedList, SharedSet are returned respectively if the entry
@@ -220,8 +299,10 @@ class Store:
 
     def delete(self, *names):
         """
-        This method delete the store if there isn't any argument.
+        This method deletes the store if there isn't any argument.
         Else, the arguments are the entries to delete.
+
+        [return value]
         Returns a boolean or raise ReadonlyError
         """
         if self._deleted:
