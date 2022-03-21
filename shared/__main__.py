@@ -2,8 +2,11 @@
 import sys
 import os
 import os.path
-import pprint
-from shared import Store, DEFAULT_LOCATION, valid_store, json_load
+from shared import Dossier
+from shared.util import valid_dossier, json_load, convert_size
+
+
+__all__ = []
 
 
 HELP = """\
@@ -17,165 +20,202 @@ https://pyrustic.github.io
 
 Description
 ===========
-Shared is a Python library to store, expose,
-read, and edit collections of data.
-
-This is the command line interface.
+Shared is a Python library for data exchange and persistence.
+Use this CLI tool to create, read, and edit dossiers.
 
 
 Commands
 ========
-There are 3 commands available:
+There are six commands available:
 
-    new del store
-
-
-Create a new store
-==================
-The command 'new' creates a new store in the
-current working directory.
-
-    Create the store
-    ================
-    new <store-name>
+    init check get set del help
 
 
-Delete a store
-==============
-The command 'del' deletes the store located in
-the current working directory or a specific entry.
+Initialize a new dossier
+========================
+The 'init' command turns the empty current working directory
+into a valid dossier.
 
-    Delete the store
-    ================
-    del <store-name>
-    
-    Delete a specific entry
-    =======================
-    del <store-name> <entry-name>
-    
-    Delete multiple entries
-    =======================
-    del <store-name> <entry-name> <entry-name> ...
+    Create the dossier
+    ==================
+    init
 
 
 Read and write
 ==============
-The command 'store' allows you to access the store
-located in the current working directory.
-If the store isn't in the current working directory,
-the program will fall back to the default directory 
-'~/PyrusticData/shared'.
+The 'check' command allows you to get basic information about
+the contents of a dossier.
+Use 'get', 'set', and 'del' commands to retrieve, update,
+and delete dossier data respectively.
+The current working directory is considered the dossier.
 
-    Content of the store
-    ====================
-    store <store-name>
+    Check the dossier
+    =================
+    check
+    
+    Check an entry
+    ==============
+    check <entry-name>
     
     Content of an entry
     ===================
-    store <store-name> <entry-name>
-    
-    Update the content of an entry
-    ==============================
-    store <store-name> <entry-name> <type> <new-content-filename>
-    Valid types: dict list set bin
+    get <entry-name>
     
     Copy the content of an entry
     ============================
-    store <store-name> <entry-name> > <destination-filename>
-
+    get <entry-name> > <destination-filename>
+    
+    Update the content of an entry
+    ==============================
+    set <entry-name> <type>
+    set <entry-name> <type> <new-content-filename>
+    Valid types: dict list set bin
+    
+    Delete a specific entry
+    =======================
+    del <entry-name>
+    
+    Delete multiple entries
+    =======================
+    del <entry-name> <entry-name> ...
 """
 
-INCORRECT_USAGE_ERROR = "Error: Incorrect usage of the command."
-MISSING_STORE_NAME_ERROR = "Error: Missing store name."
-
-
-def display(text):
-    pp = pprint.PrettyPrinter()
-    pp.pprint(text)
+DIRECTORY_MUST_BE_EMPTY_NOTE = "Directory must be empty before initialization."
+EMPTY_DOSSIER_NOTE = "This dossier is empty."
+SUCCESSFULLY_INIT_DOSSIER = "Successfully initialized this dossier !"
+ENTRY_DOESNT_EXIST_NOTE = "This entry doesn't exist."
+NOT_VALID_DOSSIER_NOTE = "This is not a valid dossier."
+DOSSIER_ALREADY_EXISTS_NOTE = "This dossier already exists."
+INCORRECT_USAGE_ERROR = "Incorrect usage of the command."
 
 
 def help_handler(*args):
     print(HELP)
 
 
-def new_handler(*args):
-    if not args:
-        print(MISSING_STORE_NAME_ERROR)
+def init_handler(*args):
+    if len(args):
+        print(INCORRECT_USAGE_ERROR)
         return
+    cache = get_dossier()
+    if cache:
+        print(DOSSIER_ALREADY_EXISTS_NOTE)
+        return
+    cwd = os.getcwd()
+    dossier_parent, dossier_name = os.path.split(cwd)
+    if os.listdir(cwd):
+        print(DIRECTORY_MUST_BE_EMPTY_NOTE)
+        return
+    Dossier(dossier_name, directory=dossier_parent)
+    print(SUCCESSFULLY_INIT_DOSSIER)
+
+
+def check_handler(*args):
     if len(args) > 1:
         print(INCORRECT_USAGE_ERROR)
         return
-    store_name = args[0]
-    Store(store_name, location=os.getcwd())
-    print("Successfully created the store '{}' !".format(store_name))
-
-
-def del_handler(*args):
-    if not args:
-        print(MISSING_STORE_NAME_ERROR)
+    cache = get_dossier()
+    if not cache:
+        print(NOT_VALID_DOSSIER_NOTE)
         return
-    store_name = args[0]
-    location = store_location(store_name)
-    if not location:
-        return
-    store = Store(store_name, location=location)
-    store.delete(*args[1:])
-    print("Successfully deleted !")
-
-
-def store_handler(*args):
-    if not args:
-        print(MISSING_STORE_NAME_ERROR)
-        return
-    store_name = args[0]
-    location = store_location(store_name)
-    if not location:
-        return
-    store = Store(store_name, location=location)
-    n = len(args[1:])
-    if n == 0:  # Show store content
-        show_store_content(store, location)
-    elif n == 1:  # Show entry content
-        entry = args[1]
-        show_entry_content(store, entry)
-    elif n == 3:  # Update the content of an entry
-        entry, container, source_filename = args[1:]
-        update_entry_content(store, entry, container,
-                             source_filename)
-    else:
-        print(INCORRECT_USAGE_ERROR)
-
-
-def show_store_content(store, location):
-    if not store.info:
-        print("- Empty store -")
-        return
-    print("{}".format(location))
-    for name, container in store.info.items():
-        print("- {} ({})".format(name, container))
-
-
-def show_entry_content(store, entry):
-    data = store.get(entry)
-    if data is None:
-        print("- This entry doesn't exist -")
-        return
-    container = store.info[entry]
-    if container == "bin":
-        if not os.path.exists(data):
-            print("Error: Missing binary file '{}'".format(data))
+    dossier_name, dossier_parent = cache
+    dossier = Dossier(dossier_name, directory=dossier_parent)
+    if len(args) == 1:
+        entry = args[0]
+        info = dossier.check(entry)
+        if not info:
+            print(ENTRY_DOESNT_EXIST_NOTE)
             return
-        with open(data, "rb") as file:
+        container, filename = info
+        size = get_file_size(filename)
+        print("'{}' {} {}".format(entry, container, size))
+    else:
+        info = dossier.check()
+        if not info:
+            print(EMPTY_DOSSIER_NOTE)
+            return
+        for entry in sorted(info):
+            container, filename = info[entry]
+            size = get_file_size(filename)
+            print("- '{}' {} {}".format(entry, container, size))
+
+
+def get_handler(*args):
+    if len(args) != 1:
+        print(INCORRECT_USAGE_ERROR)
+        return
+    cache = get_dossier()
+    if not cache:
+        print(NOT_VALID_DOSSIER_NOTE)
+        return
+    dossier_name, dossier_parent = cache
+    entry_name = args[0]
+    dossier = Dossier(dossier_name, directory=dossier_parent)
+    #data = dossier.get(entry_name)
+    #if data is None:
+    #    print(ENTRY_DOESNT_EXIST_NOTE)
+    #    return
+    info = dossier.check(entry_name)
+    if not info:
+        print(ENTRY_DOESNT_EXIST_NOTE)
+        return
+    container, filename = info
+    if container == "bin":
+        if not os.path.exists(filename):
+            print("Missing binary file '{}'".format(filename))
+            return
+        with open(filename, "rb") as file:
             data = file.read()
             sys.stdout.buffer.write(data)
     else:
-        display(data)
+        with open(filename, "r") as file:
+            data = file.read()
+            print(data)
 
 
-def update_entry_content(store, entry, container,
+def set_handler(*args):
+    if len(args) not in (2, 3):
+        print(INCORRECT_USAGE_ERROR)
+        return
+    cache = get_dossier()
+    if not cache:
+        print(NOT_VALID_DOSSIER_NOTE)
+        return
+    dossier_name, dossier_parent = cache
+    dossier = Dossier(dossier_name, directory=dossier_parent)
+    # update entry with default value accordingly to its container type
+    if len(args) == 2:
+        entry, container = args
+        update_entry_with_default_data(dossier, entry, container)
+    else:
+        entry, container, source_filename = args
+        update_entry_content(dossier, entry, container, source_filename)
+
+
+def del_handler(*args):
+    if len(args) == 0:
+        print(INCORRECT_USAGE_ERROR)
+        return
+    cache = get_dossier()
+    if not cache:
+        print(NOT_VALID_DOSSIER_NOTE)
+        return
+    dossier_name, dossier_parent = cache
+    dossier = Dossier(dossier_name, directory=dossier_parent)
+    dossier.delete(*args)
+    cache = "Entry"
+    if len(args) > 1:
+        cache = "Entries"
+    print("{} successfully deleted !".format(cache))
+
+
+def update_entry_content(dossier, entry, container,
                          source_filename):
     if not os.path.exists(source_filename):
-        print("Error: Non existent filename '{}'.".format(source_filename))
+        print("Non existent filename '{}'.".format(source_filename))
+        return
+    if container not in ("bin", "dict", "list", "set"):
+        print("Unknown container type '{}'.".format(container))
         return
     if container in ("dict", "list", "set"):
         try:
@@ -185,27 +225,42 @@ def update_entry_content(store, entry, container,
             return
         if container == "set":
             data = set(data)
-        store.set(entry, data)
-        print("Successfully updated the entry '{}' !".format(entry))
+        dossier.set(entry, data)
     elif container == "bin":
         with open(source_filename, "rb") as file:
             data = file.read()
-            store.set(entry, data)
-        print("Successfully updated the entry '{}' !".format(entry))
-    else:
-        print("Error: Unknown container type '{}'.".format(container))
+            dossier.set(entry, data)
+    print("Entry successfully updated !")
 
 
-def store_location(store_name):
-    location = os.getcwd()
-    store_path = os.path.join(location, store_name)
-    if not valid_store(store_path):
-        location = DEFAULT_LOCATION
-        store_path = os.path.join(location, store_name)
-        if not valid_store(store_path):
-            print("Error: The store '{}' doesn't exist.".format(store_name))
-            location = None
-    return location
+def update_entry_with_default_data(dossier, entry, container):
+    if container not in ("bin", "list", "dict", "set"):
+        print("Unknown container type '{}'.".format(container))
+        return
+    data = None
+    if container == "bin":
+        data = b""
+    elif container == "list":
+        data = list()
+    elif container == "dict":
+        data = dict()
+    elif container == "set":
+        data = set()
+    dossier.set(entry, data)
+    print("Entry successfully updated !")
+
+
+def get_dossier():
+    dossier_parent, dossier_name = os.path.split(os.getcwd())
+    if valid_dossier(dossier_name, dossier_parent):
+        return dossier_name, dossier_parent
+    return None
+
+
+def get_file_size(filename):
+    size = os.stat(filename).st_size
+    size, unit = convert_size(size)
+    return "{}{}".format(int(size), unit)
 
 
 def main():
@@ -215,14 +270,16 @@ def main():
         return
     command = cache[0].lower()
     args = cache[1:]
-    handlers = {"new": new_handler,
+    handlers = {"init": init_handler,
+                "check": check_handler,
+                "get": get_handler,
+                "set": set_handler,
                 "del": del_handler,
-                "store": store_handler,
                 "help": help_handler}
     try:
         handlers[command](*args)
     except KeyError:
-        print("* Unknown command - Type 'help' *")
+        print("Unknown command.")
 
 
 if __name__ == "__main__":

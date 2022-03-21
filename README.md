@@ -1,174 +1,206 @@
-# Shared
-**Smooth way to store, share, and edit data (collections and binary).**
+# Pyrustic Shared Data
+**Data exchange and persistence**
 
 This project is part of the [Pyrustic Open Ecosystem](https://pyrustic.github.io).
 > [Installation](#installation) . [Latest](https://github.com/pyrustic/shared/tags) . [Modules Documentation](https://github.com/pyrustic/shared/tree/master/docs/modules#readme)
 
 ## Table of contents
 - [Overview](#overview) 
-- [Jason](#jason) 
-- [Store](#store)
-- [Shared collections](shared-collections)
+- [Document](#document) 
+- [Dossier](#dossier)
+- [Database](#database)
+- [Temporary data](#temporary-data)
+- [Autosave feature](#autosave-feature)
+- [Implementations](#implementations)
 - [Installation](#installation) 
 
 # Overview
-**Shared** contains two main classes: `Jason` and `Store`.
+**Shared** is a Python package created to be a developer's companion when it comes to managing configuration files, storing application data, caching data, and exchanging data with other programs.
 
-| Class  | Description | Relevance |
-|--------|-------------|-----------|
-| `Jason` | allows individual access to `JSON` files that are likely to be **manually edited by a human** | relevant for managing configuration files |
-| `Store` | allows you to store collections of data **without worrying about how they are actually saved** | relevant for application data storage and persistent data caching |
+Although a lightweight package, **Shared** smoothly handles collections (**dict**, **list**, **set**), **binary** data, and **SQL** queries.
 
-**Shared** is included in [Gaspium](https://github.com/pyrustic/gaspium), the high-productivity framework to build Python apps.
+**Shared**'s application programming interface is designed for intuitive use. Thus, the expression of solutions to data exchange and persistence needs manifests in three classes: `Document`, `Dossier`, and `Database`.
 
-# Jason
-Under the hood, **Jason** uses the [JSON](https://en.wikipedia.org/wiki/JSON) format to store data.
+- **Document:** for individual access to [hackernotes](https://github.com/pyrustic/hackernote#readme) and [JSON](https://en.wikipedia.org/wiki/JSON) files that are likely to be **manually edited by a human**;
+- **Dossier:** to store collections and binary data **without worrying about how they are actually saved**;
+- **Database:** for an intuitive interaction with [SQLite](https://www.sqlite.org) **databases**.
+
+
+[Gaspium](https://github.com/pyrustic/gaspium), the framework for building Python apps with the [GASP](https://github.com/pyrustic/gaspium/blob/master/gasp.md) metaphor, includes the **Shared** package as the default solution for data exchange and persistence.
+
+# Document
+With the **Document** class, you can handle data in **Hackernote** or **JSON** format. The following examples will focus on **JSON** since it is well known. For more about hackernotes, visit the [Hackernote](https://github.com/pyrustic/hackernote#readme) project.
+
+## Example
 
 ```python
-from shared import Jason
+from shared import Document
 
 
-# Create a new jason instance that will be tied to the file 'my-data.json'.
+# Create a new document instance which will be linked to the 'my-data.json' file.
 # If this file doesn't exist yet, it will be automatically created
-jason = Jason("my-data.json")
+document = Document("my-data.json")
 
-# From now, we can use jason to read and write the contents of 'my-data.json' !
+# From now, we can use 'document' to read and write the contents of 'my-data.json' !
 # ...
 ```
+By default, the `file_format` argument of the constructor is set to `auto`, i.e. the document will be considered as a JSON file if its extension is `.json`, otherwise it will be considered as a hackernote. Other values for the `file_format` argument are: `hackernote` and `json`.
+
 
 ## Initialization
-It's as easy as testing a boolean to see if your JSON file is newly created or not:
+It's as simple as testing a boolean to check if the underlying document file is newly created or not:
 
 ```python
-from shared import Jason
+from shared import Document
 
 
 # access 'my-data.json'
-jason = Jason("my-data.json")
+document = Document("my-data.json")
 
 # let's initialize the content of 'my-data.json'
-if jason.new:
-    jason.data = {"name": "alex", "job": "angelist"}
-    # oops I have been distracted by the woman in red !
-    jason.data["job"] = "evangelist"
-    # now let's save the contents of jason.data to the underlying JSON file
-    jason.save()  # persisted !
+if document.new:
+    data = {"name": "alex", "job": "evangelist"}
+    document.set(data)  # persisted !
 ```
 
-
 ## Default data
-**Jason** comes with a feature to automatically initialize a file with default data:
+You can automatically initialize a document with default data:
 
 ```python
-from shared import Jason
+from shared import Document
 
 # default data to init the file 'my-data.json'
 DEFAULT_DATA = {"name": "alex", "job": "evangelist"}
 
 # access 'my-data.json'
-jason = Jason("my-data.json", default=DEFAULT_DATA)
+document = Document("my-data.json", default=DEFAULT_DATA)
 
 # Done !
-
 ```
 
 ## Data location
-By default, the `JSON` files are saved in `$HOME/PyrusticData/shared`. You can change the location to fit your needs:
+By default, document files are saved in `$HOME/PyrusticHome/shared`. You can change the location to fit your needs:
 
 ```python
-from shared import Jason
+from shared import Document
 
-LOCATION = "/home/alex/private"
+DIRECTORY = "/home/alex/private"
 
 # access 'my-data.json'
-jason = Jason("my-data.json", location=LOCATION)
+document = Document("my-data.json", directory=DIRECTORY)
 
 ```
 
 ## Autosave
-Thanks to [probed](https://github.com/pyrustic/probed) collections, you can tell **Jason** to autosave when the contents of a collection change:
+Thanks to [probed](https://github.com/pyrustic/probed) collections, you can tell **Document** to autosave when the contents of a collection change:
 
 ```python
-from shared import Jason
+from shared import Document
 
 
-# access 'my-config.json'
-jason = Jason("my-config.json", autosave=True, default=[])
+# access 'my-config.json' with `autosave` mode enabled
+document = Document("my-config.json", autosave=True, default=[])
+# load the data
+data = document.get()  # returns a probed list
 
-# when you set autosave to True, you don't anymore need
-# to call the method .save() !
+# few lines of code later...
 
-jason.data.append("batman")  # persisted ! yeah yeah !
+data.append("batman")  # automatically saved !
 ```
 
-`shared.SharedList`, `shared.SharedDict`, and `shared.SharedSet` are based on `probed.ProbedList`, `probed.ProbedDict`, and `probed.ProbedSet` respectively. If you want to have full control over your collections in your projects, such as being notified when their contents change or filtering what is added to them, check [probed](https://github.com/pyrustic/probed) !
+When the `autosave` mode is enabled, the data is converted into a **probed** collection. In the example above, the `get` method returns a **probed** list.
 
-## Readonly
-Sometimes you need to access a JSON file with the guarantee that its contents will not be modified by your own code:
+**Probed** is a Python library that gives full control over collections (`list`, `dict`, `set`), such as being notified when their contents change or filtering what is added to them.
+
+> **Discover [Probed](https://github.com/pyrustic/probed#readme) !**
+
+## Caching
+By default, `caching` mode is enabled, i.e. you can access cached data through the `cache` property of a **Document** instance:
 
 ```python
-from shared import Jason
+from shared import Document
+
+DEFAULT_DATA = {"name": "alex", "job": "evangelist"}
+
+# access 'my-config.json'
+document = Document("my-config.json", caching=True, default=DEFAULT_DATA)
+
+data = document.get()  # returns a probed dict
+
+if data is document.cache:
+    print("Same same !")
+```
+
+## Readonly
+Sometimes you need to access a document file with the guarantee that its contents will not be modified by your own code:
+
+```python
+from shared import Document
 
 
 # access 'my-data.json'
-jason = Jason("my-data.json", readonly=True)
+document = Document("my-data.json", readonly=True)
 
-# when you set readonly to True, you can't anymore edit the content !
-# shared.ReadonlyError will be raised if you try to mess with a readonly jason
+# when you set readonly to True, you can no longer edit the content !
+# shared.ReadonlyError will be raised if you try to mess with a readonly document
 
 ```
 
 ## Clear data
-You can delete a JSON file (assuming that the file isn't accessed in readonly mode):
+You can delete the underlying file of a document (assuming that the file isn't accessed in readonly mode):
+
 ```python
-from shared import Jason
+from shared import Document
 
 
 # access 'my-data.json'
-jason = Jason("my-data.json")
+document = Document("my-data.json")
 
-# delete "my-data.json"
-jason.delete()
+# delete 'my-data.json'
+document.delete()
 
-print(jason.deleted)  # output: True
-
+if document.deleted:
+    print("Successfully deleted !")
 ```
 
-# Store
-Under the hood, **Store** uses the [JSON](https://en.wikipedia.org/wiki/JSON) and binary files.
+# Dossier
+A [dossier](https://dictionary.cambridge.org/dictionary/english/dossier) stores collections (`list`, `dict`, `set`) and `binary data` with a unified interface. You can read and write a dossier not only programmatically but also from the **command line**.
 
+Under the hood, **Dossier** uses [files](https://en.wikipedia.org/wiki/Computer_file) and [JSON](https://en.wikipedia.org/wiki/JSON).
+
+## Example
 Let's create data in **script_1.py**:
 
 ```python
 # script_1.py
-from shared import Store
+from shared import Dossier
 
 # data
 people = {"Jack": "male", "Jane": "female"}  # dict
 planets = ["Mars", "Venus", "Jupiter"]  # list
 colors = {"red", "green", "blue"}  # set
 
-# let's persist the data in the store 'my-store'
-store = Store("my-store")
-store.set("people", people)  # set the entry 'people'
-store.set("planets", planets)  # set the entry 'planets'
-store.set("colors", colors)  # set the entry 'colors'
+# let's persist the data in 'my-dossier'
+dossier = Dossier("my-dossier")
+dossier.set("people", people)  # set the 'people' entry
+dossier.set("planets", planets)  # set the 'planets' entry
+dossier.set("colors", colors)  # set the 'colors' entry
 
 # Done ! The data is persisted !
 ```
 
-From **script_2.py** let's access the data created by **script_1.py**:
+From **script_2.py**, let's access the data created by **script_1.py**:
 ```python
 # script_2.py
-from shared import Store
+from shared import Dossier
 
-# let's open the shared store in readonly mode
-store = Store("my-store")
+# let's access the shared dossier
+dossier = Dossier("my-dossier")
 
-# get data from the shared store 'my-store'
-people = store.get("people") # get the entry 'people'
-planets = store.get("planets") # get the entry 'planets'
-colors = store.get("colors") # get the entry 'colors'
+# get data from the shared dossier
+people = dossier.get("people") # get the 'people' entry
+planets = dossier.get("planets") # get the 'planets' entry'
+colors = dossier.get("colors") # get the 'colors' entry
 
 print(people)
 # output: {'Jack': 'male', 'Jane': 'female'}
@@ -182,34 +214,35 @@ print(colors)
 ```
 
 ## Data location
-By default, the data is saved in `$HOME/PyrusticData/shared`. You can change the location to fit your needs:
+By default, the dossier is created in `$HOME/PyrusticHome/shared`. You can change the location to fit your needs:
 ```python
-from shared import Store
+from shared import Dossier
 
-LOCATION = "/home/alex/private/stores"
+DIRECTORY = "/home/alex/private/dossiers"
 
-# access 'my-store'
-store = Store("my-store", location=LOCATION)
+# access 'my-dossier'
+dossier = Dossier("my-dossier", directory=DIRECTORY)
 ```
 
 ## Autosave
-Thanks to [probed](https://github.com/pyrustic/probed) collections, you can tell **Store** to autosave when the contents of a collection change:
+Thanks to [probed](https://github.com/pyrustic/probed) collections, you can tell **Dossier** to autosave when the contents of a collection change:
 
 ```python
-from shared import Store
+from shared import Dossier
 
-# access 'my-store' with autosave set to True
-# so shared collections will be automatically persisted
-store = Store("my-store", autosave=True)
+# access 'my-dossier' with autosave set to True
+# thus, shared collections will be automatically persisted
+dossier = Dossier("my-dossier", autosave=True)
 
-# get the entry 'people' previously stored as {'Jack': 'male', 'Jane': 'female'}
-people = store.get("people")  # the value returned is a 'shared.SharedDict'
+# get the 'people' entry previously stored as {'Jack': 'male', 'Jane': 'female'}
+people = dossier.get("people")  # returns a probed dict
 
 # update the contents of people
-people["Janet"] = "female"  # persisted !
+people["Janet"] = "female"  # automatically saved !
 
 # set a new entry
-new_entry = store.set("new_entry", ["alpha", 42, True])  # the value returned is a 'shared.SharedList
+data = ["alpha", 42, True]
+new_entry = dossier.set("new_entry", data)  # returns a probed list
 
 # update the contents of new_entry
 new_entry.append(3.14)  # persisted !
@@ -217,44 +250,59 @@ new_entry.append(3.14)  # persisted !
 ```
 
 ## Readonly
-Sometimes you need to access a store with the guarantee that its contents will not be modified by your own code:
+Sometimes you need to access a dossier with the guarantee that its contents will not be modified by your own code:
 ```python
-from shared import Store
+from shared import Dossier
 
 
-# access 'my-store'
-store = Store("my-store", readonly=True)
+# access 'my-dossier'
+dossier = Dossier("my-dossier", readonly=True)
 
 # when you set readonly to True, you can't anymore edit the contents !
-# you can only use the 'get' method of the store, not anymore the 'set' method, nor autosave.
-# shared.ReadonlyError will be raised if you try to mess with a readonly jason
+# you can only use the 'get' method of the dossier, not anymore the 'set' method, nor autosave.
+# shared.ReadonlyError will be raised if you try to mess with a readonly dossier
 
 ```
 
 ## Binary data
-You can store binary data with in your store :
+You can store binary data with the same unified interface:
 
 ```python
 # script_1.py
-from shared import Store
+from shared import Dossier
 
-store = Store("my-store")
+dossier = Dossier("my-dossier")
 
 with open("/home/alex/selfie.png", "rb") as file:
     data = file.read()
-    store.set("selfie", data)  # set the entry 'selfie'
+    dossier.set("selfie", data)  # set the 'selfie' entry
 
-# the method 'set' returns the path to the binary file that stores the binary entry
+# the 'set' method returns the path to the binary file that stores the binary entry
+```
+
+The above code can also be expressed like this:
+
+```python
+# script_1.py
+import pathlib
+from shared import Dossier
+
+dossier = Dossier("my-dossier")
+
+path = pathlib.Path("/home/alex/selfie.png")
+dossier.set("selfie", path)  # set the 'selfie' entry
+
+# the 'set' method returns the path to the binary file that stores the binary entry
 ```
 
 You can retrieve your binary data from another script:
 ```python
 # script_2.py
-from shared import Store
+from shared import Dossier
 from shutil import copyfile
 
-store = Store("my-store")
-source_path = store.get("selfie")  # get the bin entry 'selfie'
+dossier = Dossier("my-dossier")
+source_path = dossier.get("selfie")  # get the filename of the 'selfie' bin entry
 destination_path = "/home/alex/new.png"
 
 # copy the content from source to destination
@@ -262,92 +310,195 @@ copyfile(source_path, destination_path)
 
 ```
 
-## Clear data
-You can decide to delete a store:
+## Check
+Use the `check` method to check the contents of a dossier or a specific entry:
 
 ```python
-from shared import Store
+from shared import Dossier
 
-store = Store("my-store")
-store.delete()  # data collections, binary data, and meta data are gone
+dossier = Dossier("my-dossier")
+
+# check a specific entry
+info = dossier.check("entry")
+if info:
+    # info is a 2-tuple (container, filename)
+    # the container is a string that represents the type of the entry
+    # containers: "dict", "list", "set", and "bin"
+    # The filename is either the path to a JSON file or a binary file
+    container, filename = info
+
+# check the contents of the dossier
+dossier_info = dossier.check()  # returns a dict, keys are entries and values are 2-tuples
+
+for entry, info in dossier_info.items():
+    container, filename = info
+    print("Entry:", entry)
+    print("Container:", container)
+    print("Filename:", filename)
+    print()
 ```
 
+
+## Clear data
+You can decide to delete a specific entry, a group of entries, or the dossier:
+
+```python
+from shared import Dossier
+
+dossier = Dossier("my-dossier")
+
+# delete a specific entry
+dossier.delete("entry_1")
+
+# delete a group of entries
+dossier.delete("entry_2", "entry_3")
+
+# delete the dossier
+dossier.delete()  # collections, binary data, and meta data are gone
+```
 
 ## Command line interface
-**Shared** comes with an easy-to-use command line interface for the class **Store**. Type `help` in the command line interface to display a short manual.
+**Shared** comes with an intuitive command line interface for **Dossier** class. Type `help` in the command line interface to display a short manual.
 
-Let assume that we got a store named `my-store` which contains data:
+For the next subsections, suppose we have a non-empty dossier named `my-dossier` located in `/home/alex/dossiers`. 
+
+### Check the content
+Check the contents of `my-dossier` or a specific entry:
+```bash
+$ cd /home/alex/dossiers/my-dossier
+
+$ shared check
+- 'colors' set 42B
+- 'people' dict 34B
+- 'planets' list 28B
+
+$ shared check people
+'people' dict 34B
+
+$ shared check colors
+'colors' set 42B
+```
+
+### Read the content of a specific entry
 
 ```bash
-$ shared store "my-store" "planets"
-['Mars', 'Venus', 'Jupiter', 'Earth', 'Saturn']
+$ cd /home/alex/dossiers/my-dossier
 
-$ shared store "my-store" "colors"
-{'red', 'green', 'blue'}
-
-$ shared store "my-store" "people"
+$ shared get people
 {'Jack': 'male', 'Jane': 'female'}
+
+$ shared get planets
+['Mars', 'Venus', 'Jupiter']
+
+shared get colors
+{"red": null, "green": null, "blue": null}
 ```
+The output text is the exact JSON representation as stored in a file. So the **output can be consumed as is** by another program and deserialized with a JSON library. Note that the `colors` entry is a `set` but represented as a `dict` in JSON.
 
-You can check the contents of a store:
+### Store binary data
 ```bash
-$ shared store "my-store"
-/home/alex/PyrusticData/shared
-- colors (set)
-- people (dict)
-- planets (list)
-```
-
-By default, the command line interface looks for the requested store in the default location `$HOME/PyrusticData/shared`. Private stores are still accessible through the command line interface. You will just need to change the current working directory:
-
-```bash
-$ cd "/home/alex/private"
-
-$ shared store "secret-store-42"
-- Empty store -
-```
-
-You can store binary data as an entry from the command line:
-
-```bash
-$ shared store "my-store" "selfie" bin "/home/alex/selfie.png"
-Successfully updated the entry 'selfie' !
+$ shared set selfie bin "/home/alex/selfie.png"
+Entry successfully updated !
 ```
 
 You can copy a binary entry into an arbitrary file from the command line:
 
 ```bash
-$ shared store "my-store" "selfie" > "/home/alex/new.png"
-
+$ shared get selfie > "/home/alex/selfie-copy.png"
 ```
 
-You can delete an entry from the command line:
+### Store a collection
+```bash
+$ shared set countries list "/home/alex/countries.json"
+Entry successfully updated !
+
+$ shared set my_config dict "/home/alex/app_config.json"
+Entry successfully updated !
+```
+
+### Delete an entry
 
 ```bash
-$ shared del "my-store" "selfie"
-Successfully deleted !
+$ shared del "selfie"
+Entry successfully deleted !
 ```
 
-You can delete a store from the command line:
+### Delete a dossier
+Right-click on the folder with your mouse, then send it safely to the trash ;)
 
-```bash
-$ shared del "my-store"
-Successfully deleted !
+# Database
+Intuitive interaction with **SQLite** databases.
+
+The following example shows how nice it is to work with the **Database** class:
+
+```python
+from shared import Database
+
+# Initialization script
+# This SQL script will create two tables: friends and projects
+INIT_SCRIPT = """\
+CREATE TABLE friends (name TEXT PRIMARY KEY,
+                      age INTEGER NOT NULL);
+
+CREATE TABLE projects (name TEXT PRIMARY KEY,
+                       language TEXT NOT NULL);
+"""
+
+# If this database doesn't exist yet,
+# it will be created with the initialization script
+database = Database("my-database", init_script=INIT_SCRIPT)
+
+# This will only be executed once !
+# So you can safely restart this script again and again...
+if database.new:
+    # Write data to this database
+    sql = """INSERT INTO friends VALUES ("Jack", 20)"""
+    database.edit(sql)
+
+    # few lines of code later...
+
+    # Write data to this database
+    sql = """INSERT INTO friends VALUES (?, ?)"""
+    database.edit(sql, param=("Jane", 21))
+
+# Read data
+sql = "SELECT * FROM friends"
+columns, data = database.query(sql)
+
+print(columns)
+# output: ['name', 'age']
+
+print(data)
+# output: [('Jack', 20), ('Jane', 21)]
+
 ```
 
-
-# Shared collections
-**Jason** and **Store** works with shared collections that are based on [probed](https://github.com/pyrustic/probed) collections. If the boolean `readonly` isn't set to True, you can use the method `save` of the shared collections returned by **Jason** and **Store**.
-
-There is an intuitive mapping between Python collections, Shared collections, and Probed collections:
-
-| Python collections | Shared collections | Probed collections |
-|--------------------|--------------------|--------------------|
-| dict               | shared.SharedDict  | probed.ProbedDict  |
-| list               | shared.SharedList  | probed.ProbedList  |
-| set                | shared.SharedSet   | probed.ProbedSet   |
+# Temporary data
+The constructors of all three classes have a `directory` parameter. For the **Document** and **Dossier** classes, if you set `None` as the `directory` argument, the underlying file will be created in a **temporary directory** which will be automatically deleted at the end of use. The **Database** class will not create a temporary directory but will store the database in [memory](https://www.sqlite.org/inmemorydb.html).
 
 
+# Autosave feature
+When the `autosave` mode is enabled, **Document** and **Dossier** uses **Probed** to create and return `probed collections`.
+
+**Probed** is a Python library that gives full control over collections (`list`, `dict`, `set`), such as being notified when their contents change or filtering what is added to them.
+
+The obvious mapping between Python collections and Probed collections:
+
+| Python collections | Probed collections |
+|--------------------|--------------------|
+| dict               | probed.ProbedDict  |
+| list               | probed.ProbedList  |
+| set                | probed.ProbedSet   |
+
+
+> **Discover [Probed](https://github.com/pyrustic/probed#readme) !**
+
+
+
+# Implementations
+This is the **reference** implementation of the **Pyrustic Shared Data** written in **Python**. 
+
+_Do you want to implement this in another programming language ?_ Let me know ;)
 
 # Installation
 **Shared** is **cross platform** and versions under **1.0.0** will be considered **Beta** at best. It is built on [Ubuntu](https://ubuntu.com/download/desktop) with [Python 3.8](https://www.python.org/downloads/) and should work on **Python 3.5** or **newer**.
@@ -363,19 +514,6 @@ $ pip install shared
 $ pip install shared --upgrade --upgrade-strategy eager
 
 ```
-
-## Make your project packageable
-**Backstage** is an extensible command line tool for managing software projects. By default, it supports Python, so you can run the `init` command to make your Python project [packageable](https://packaging.python.org/en/latest/tutorials/packaging-projects/):
-
-```bash
-$ cd /path/to/project
-$ backstage init
-Project successfully initialized !
-```
-
-You can also create a distribution package of your project with the `build` command, then publish it to [PyPI](https://pypi.org/) with the `release` command, et cetera.
-
-**Discover [Backstage](https://github.com/pyrustic/backstage) !**
 
 
 <br>

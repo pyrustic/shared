@@ -2,6 +2,11 @@
 
 [shared](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/README.md#module-overview)
 <br>
-Main module where are defined the classes Jason and Store
+The Shared Data Interface
+
+
+[shared.error](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared.error/README.md#module-overview)
+<br>
+Errors classes
 
 
