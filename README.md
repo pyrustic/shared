@@ -11,6 +11,7 @@ This project is part of the [Pyrustic Open Ecosystem](https://pyrustic.github.io
 - [Database](#database)
 - [Temporary data](#temporary-data)
 - [Autosave feature](#autosave-feature)
+- [Command line interface](#command-line-interface)
 - [Implementations](#implementations)
 - [Installation](#installation) 
 
@@ -357,75 +358,6 @@ dossier.delete("entry_2", "entry_3")
 dossier.delete()  # collections, binary data, and meta data are gone
 ```
 
-## Command line interface
-**Shared** comes with an intuitive command line interface for **Dossier** class. Type `help` in the command line interface to display a short manual.
-
-For the next subsections, suppose we have a non-empty dossier named `my-dossier` located in `/home/alex/dossiers`. 
-
-### Check the content
-Check the contents of `my-dossier` or a specific entry:
-```bash
-$ cd /home/alex/dossiers/my-dossier
-
-$ shared check
-- 'colors' set 42B
-- 'people' dict 34B
-- 'planets' list 28B
-
-$ shared check people
-'people' dict 34B
-
-$ shared check colors
-'colors' set 42B
-```
-
-### Read the content of a specific entry
-
-```bash
-$ cd /home/alex/dossiers/my-dossier
-
-$ shared get people
-{'Jack': 'male', 'Jane': 'female'}
-
-$ shared get planets
-['Mars', 'Venus', 'Jupiter']
-
-shared get colors
-{"red": null, "green": null, "blue": null}
-```
-The output text is the exact JSON representation as stored in a file. So the **output can be consumed as is** by another program and deserialized with a JSON library. Note that the `colors` entry is a `set` but represented as a `dict` in JSON.
-
-### Store binary data
-```bash
-$ shared set selfie bin "/home/alex/selfie.png"
-Entry successfully updated !
-```
-
-You can copy a binary entry into an arbitrary file from the command line:
-
-```bash
-$ shared get selfie > "/home/alex/selfie-copy.png"
-```
-
-### Store a collection
-```bash
-$ shared set countries list "/home/alex/countries.json"
-Entry successfully updated !
-
-$ shared set my_config dict "/home/alex/app_config.json"
-Entry successfully updated !
-```
-
-### Delete an entry
-
-```bash
-$ shared del "selfie"
-Entry successfully deleted !
-```
-
-### Delete a dossier
-Right-click on the folder with your mouse, then send it safely to the trash ;)
-
 # Database
 Intuitive interaction with **SQLite** databases.
 
@@ -493,7 +425,74 @@ The obvious mapping between Python collections and Probed collections:
 
 > **Discover [Probed](https://github.com/pyrustic/probed#readme) !**
 
+# Command line interface
+**Shared** comes with an intuitive command line interface for **Dossier** class. Type `help` in the command line interface to display a short manual.
 
+For the next subsections, suppose we have a non-empty dossier named `my-dossier` located in `/home/alex/dossiers`. 
+
+## Check the content
+Check the contents of `my-dossier` or a specific entry:
+```bash
+$ cd /home/alex/dossiers/my-dossier
+
+$ shared check
+- 'colors' set 42B
+- 'people' dict 34B
+- 'planets' list 28B
+
+$ shared check people
+'people' dict 34B
+
+$ shared check colors
+'colors' set 42B
+```
+
+## Read the content of a specific entry
+
+```bash
+$ cd /home/alex/dossiers/my-dossier
+
+$ shared get people
+{'Jack': 'male', 'Jane': 'female'}
+
+$ shared get planets
+['Mars', 'Venus', 'Jupiter']
+
+shared get colors
+{"red": null, "green": null, "blue": null}
+```
+The output text is the exact JSON representation as stored in a file. So the **output can be consumed as is** by another program and deserialized with a JSON library. Note that the `colors` entry is a `set` but represented as a `dict` in JSON.
+
+## Store binary data
+```bash
+$ shared set selfie bin "/home/alex/selfie.png"
+Entry successfully updated !
+```
+
+You can copy a binary entry into an arbitrary file from the command line:
+
+```bash
+$ shared get selfie > "/home/alex/selfie-copy.png"
+```
+
+## Store a collection
+```bash
+$ shared set countries list "/home/alex/countries.json"
+Entry successfully updated !
+
+$ shared set my_config dict "/home/alex/app_config.json"
+Entry successfully updated !
+```
+
+## Delete an entry
+
+```bash
+$ shared del "selfie"
+Entry successfully deleted !
+```
+
+## Delete a dossier
+Right-click on the folder with your mouse, then send it safely to the trash ;)
 
 # Implementations
 This is the **reference** implementation of the **Pyrustic Shared Data** written in **Python**. 
