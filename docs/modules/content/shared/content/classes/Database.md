@@ -19,7 +19,7 @@ Definition of the Database class
 object
 
 ## Class Attributes
-
+No class attributes.
 
 ## Class Properties
 |Property|Type|Description|Inherited from|
@@ -37,7 +37,7 @@ object
 
 
 # All Methods
-[\_\_init\_\_](#__init__) &nbsp;&nbsp; [\_create\_connection](#_create_connection) &nbsp;&nbsp; [\_ensure\_filename\_and\_directory](#_ensure_filename_and_directory) &nbsp;&nbsp; [\_setup](#_setup) &nbsp;&nbsp; [\_stringify\_script](#_stringify_script) &nbsp;&nbsp; [check](#check) &nbsp;&nbsp; [close](#close) &nbsp;&nbsp; [delete](#delete) &nbsp;&nbsp; [edit](#edit) &nbsp;&nbsp; [export](#export) &nbsp;&nbsp; [get\_columns](#get_columns) &nbsp;&nbsp; [get\_tables](#get_tables) &nbsp;&nbsp; [query](#query) &nbsp;&nbsp; [script](#script)
+[\_\_init\_\_](#__init__) &nbsp;&nbsp; [check](#check) &nbsp;&nbsp; [close](#close) &nbsp;&nbsp; [delete](#delete) &nbsp;&nbsp; [edit](#edit) &nbsp;&nbsp; [export](#export) &nbsp;&nbsp; [get\_columns](#get_columns) &nbsp;&nbsp; [get\_tables](#get_tables) &nbsp;&nbsp; [query](#query) &nbsp;&nbsp; [script](#script) &nbsp;&nbsp; [\_create\_connection](#_create_connection) &nbsp;&nbsp; [\_ensure\_filename\_and\_directory](#_ensure_filename_and_directory) &nbsp;&nbsp; [\_setup](#_setup) &nbsp;&nbsp; [\_stringify\_script](#_stringify_script)
 
 ## \_\_init\_\_
 Init
@@ -61,77 +61,7 @@ Init
 
 
 
-**Return Value:** None.
-
-[Back to Top](#module-overview)
-
-
-## \_create\_connection
-None
-
-
-
-**Signature:** (self)
-
-
-
-
-
-**Return Value:** None.
-
-[Back to Top](#module-overview)
-
-
-## \_ensure\_filename\_and\_directory
-None
-
-
-
-**Signature:** (self)
-
-
-
-
-
-**Return Value:** None.
-
-[Back to Top](#module-overview)
-
-
-## \_setup
-None
-
-
-
-**Signature:** (self)
-
-
-
-
-
-**Return Value:** None.
-
-[Back to Top](#module-overview)
-
-
-## \_stringify\_script
-This method will:
-- try to read the script: if the script is a file-like object,
-    the content (string) will be returned
-- try to open the script: if the script is a path to a file,
-    the content (string) will be returned
-- if the script is already a string, it will be returned as it,
-- the script will be returned as it if failed to read/open
-
-
-
-**Signature:** (self, script)
-
-
-
-
-
-**Return Value:** None.
+**Return Value:** None
 
 [Back to Top](#module-overview)
 
@@ -148,7 +78,7 @@ Test the database
 
 
 
-**Return Value:** ['Returns True if this is a legal database, otherwise returns False']
+**Return Value:** Returns True if this is a legal database, otherwise returns False
 
 [Back to Top](#module-overview)
 
@@ -165,7 +95,7 @@ Close the connection
 
 
 
-**Return Value:** ['Returns a boolean']
+**Return Value:** Returns a boolean
 
 [Back to Top](#module-overview)
 
@@ -182,7 +112,7 @@ Delete this database
 
 
 
-**Return Value:** ['Returns a boolean']
+**Return Value:** Returns a boolean
 
 [Back to Top](#module-overview)
 
@@ -205,7 +135,7 @@ Formally: Data Definition Language (DDL) and Data Manipulation Language (DML).
 
 
 
-**Return Value:** ['It returns True or False or raises sqlite.Error, sqlite.Warning']
+**Return Value:** It returns True or False or raises sqlite.Error, sqlite.Warning
 
 [Back to Top](#module-overview)
 
@@ -222,7 +152,7 @@ This method can raise sqlite.Error, sqlite.Warning
 
 
 
-**Return Value:** None.
+**Return Value:** None
 
 [Back to Top](#module-overview)
 
@@ -247,7 +177,7 @@ This method can raise sqlite.Error, sqlite.Warning
 
 
 
-**Return Value:** None.
+**Return Value:** None
 
 [Back to Top](#module-overview)
 
@@ -265,7 +195,7 @@ This method can raise sqlite.Error, sqlite.Warning
 
 
 
-**Return Value:** None.
+**Return Value:** None
 
 [Back to Top](#module-overview)
 
@@ -287,7 +217,7 @@ It returns a tuple: (data, description).
 
 
 
-**Return Value:** None.
+**Return Value:** None
 
 [Back to Top](#module-overview)
 
@@ -306,7 +236,77 @@ script could be a path (pathlib.Path) to a file, a file-like object or just a st
 
 
 
-**Return Value:** None.
+**Return Value:** None
+
+[Back to Top](#module-overview)
+
+
+## \_create\_connection
+None
+
+
+
+**Signature:** (self)
+
+
+
+
+
+**Return Value:** None
+
+[Back to Top](#module-overview)
+
+
+## \_ensure\_filename\_and\_directory
+None
+
+
+
+**Signature:** (self)
+
+
+
+
+
+**Return Value:** None
+
+[Back to Top](#module-overview)
+
+
+## \_setup
+None
+
+
+
+**Signature:** (self)
+
+
+
+
+
+**Return Value:** None
+
+[Back to Top](#module-overview)
+
+
+## \_stringify\_script
+This method will:
+- try to read the script: if the script is a file-like object,
+    the content (string) will be returned
+- try to open the script: if the script is a path to a file,
+    the content (string) will be returned
+- if the script is already a string, it will be returned as it,
+- the script will be returned as it if failed to read/open
+
+
+
+**Signature:** (self, script)
+
+
+
+
+
+**Return Value:** None
 
 [Back to Top](#module-overview)
 

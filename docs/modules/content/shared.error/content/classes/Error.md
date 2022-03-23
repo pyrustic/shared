@@ -38,7 +38,7 @@ Initialize self.  See help(type(self)) for accurate signature.
 
 
 
-**Return Value:** None.
+**Return Value:** None
 
 [Back to Top](#module-overview)
 

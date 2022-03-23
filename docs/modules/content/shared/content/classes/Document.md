@@ -19,7 +19,7 @@ Definition of the Document class
 object
 
 ## Class Attributes
-
+No class attributes.
 
 ## Class Properties
 |Property|Type|Description|Inherited from|
@@ -40,7 +40,7 @@ object
 
 
 # All Methods
-[\_\_init\_\_](#__init__) &nbsp;&nbsp; [\_check\_format](#_check_format) &nbsp;&nbsp; [\_dump](#_dump) &nbsp;&nbsp; [\_ensure\_autosave](#_ensure_autosave) &nbsp;&nbsp; [\_ensure\_name\_and\_directory](#_ensure_name_and_directory) &nbsp;&nbsp; [\_load](#_load) &nbsp;&nbsp; [\_setup](#_setup) &nbsp;&nbsp; [delete](#delete) &nbsp;&nbsp; [get](#get) &nbsp;&nbsp; [set](#set)
+[\_\_init\_\_](#__init__) &nbsp;&nbsp; [delete](#delete) &nbsp;&nbsp; [get](#get) &nbsp;&nbsp; [set](#set) &nbsp;&nbsp; [\_check\_format](#_check_format) &nbsp;&nbsp; [\_dump](#_dump) &nbsp;&nbsp; [\_ensure\_autosave](#_ensure_autosave) &nbsp;&nbsp; [\_ensure\_name\_and\_directory](#_ensure_name_and_directory) &nbsp;&nbsp; [\_load](#_load) &nbsp;&nbsp; [\_setup](#_setup)
 
 ## \_\_init\_\_
 Init.
@@ -65,103 +65,7 @@ Init.
 
 
 
-**Return Value:** None.
-
-[Back to Top](#module-overview)
-
-
-## \_check\_format
-None
-
-
-
-**Signature:** (self)
-
-
-
-
-
-**Return Value:** None.
-
-[Back to Top](#module-overview)
-
-
-## \_dump
-None
-
-
-
-**Signature:** (self, data)
-
-
-
-
-
-**Return Value:** None.
-
-[Back to Top](#module-overview)
-
-
-## \_ensure\_autosave
-None
-
-
-
-**Signature:** (self, data)
-
-
-
-
-
-**Return Value:** None.
-
-[Back to Top](#module-overview)
-
-
-## \_ensure\_name\_and\_directory
-None
-
-
-
-**Signature:** (self)
-
-
-
-
-
-**Return Value:** None.
-
-[Back to Top](#module-overview)
-
-
-## \_load
-None
-
-
-
-**Signature:** (self)
-
-
-
-
-
-**Return Value:** None.
-
-[Back to Top](#module-overview)
-
-
-## \_setup
-None
-
-
-
-**Signature:** (self)
-
-
-
-
-
-**Return Value:** None.
+**Return Value:** None
 
 [Back to Top](#module-overview)
 
@@ -178,7 +82,7 @@ Returns a boolean or raise ReadonlyError
 
 
 
-**Return Value:** None.
+**Return Value:** None
 
 [Back to Top](#module-overview)
 
@@ -194,7 +98,7 @@ Load data from the document
 
 
 
-**Return Value:** None.
+**Return Value:** None
 
 [Back to Top](#module-overview)
 
@@ -211,7 +115,103 @@ Return the same data or the probed version of the data if autosave is True.
 
 
 
-**Return Value:** None.
+**Return Value:** None
+
+[Back to Top](#module-overview)
+
+
+## \_check\_format
+None
+
+
+
+**Signature:** (self)
+
+
+
+
+
+**Return Value:** None
+
+[Back to Top](#module-overview)
+
+
+## \_dump
+None
+
+
+
+**Signature:** (self, data)
+
+
+
+
+
+**Return Value:** None
+
+[Back to Top](#module-overview)
+
+
+## \_ensure\_autosave
+None
+
+
+
+**Signature:** (self, data)
+
+
+
+
+
+**Return Value:** None
+
+[Back to Top](#module-overview)
+
+
+## \_ensure\_name\_and\_directory
+None
+
+
+
+**Signature:** (self)
+
+
+
+
+
+**Return Value:** None
+
+[Back to Top](#module-overview)
+
+
+## \_load
+None
+
+
+
+**Signature:** (self)
+
+
+
+
+
+**Return Value:** None
+
+[Back to Top](#module-overview)
+
+
+## \_setup
+None
+
+
+
+**Signature:** (self)
+
+
+
+
+
+**Return Value:** None
 
 [Back to Top](#module-overview)
 
