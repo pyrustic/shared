@@ -32,6 +32,8 @@ Although a lightweight package, **Shared** smoothly handles collections (**dict*
 # Document
 With the **Document** class, you can handle data in **Hackernote** or **JSON** format. The following examples will focus on **JSON** since it is well known. For more about hackernotes, visit the [Hackernote](https://github.com/pyrustic/hackernote#readme) project.
 
+> **Read the class [documentation](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/classes/Document.md#class-document)**
+
 ## Example
 
 ```python
@@ -168,6 +170,8 @@ if document.deleted:
 A [dossier](https://dictionary.cambridge.org/dictionary/english/dossier) stores collections (`list`, `dict`, `set`) and `binary data` with a unified interface. You can read and write a dossier not only programmatically but also from the **command line**.
 
 Under the hood, **Dossier** uses [files](https://en.wikipedia.org/wiki/Computer_file) and [JSON](https://en.wikipedia.org/wiki/JSON).
+
+> **Read the class [documentation](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/classes/Dossier.md#class-dossier)**
 
 ## Example
 Let's create data in **script_1.py**:
@@ -361,6 +365,9 @@ dossier.delete()  # collections, binary data, and meta data are gone
 # Database
 Intuitive interaction with **SQLite** databases.
 
+> **Read the class [documentation](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/classes/Database.md#class-database)**
+
+## Example
 The following example shows how nice it is to work with the **Database** class:
 
 ```python
