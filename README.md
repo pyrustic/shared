@@ -63,7 +63,7 @@ document = Document("my-data.json")
 # let's initialize the content of 'my-data.json'
 if document.new:
     data = {"name": "alex", "job": "evangelist"}
-    document.set(data)  # persisted !
+    document.write(data)  # persisted !
 ```
 
 ## Default data
@@ -104,7 +104,7 @@ from shared import Document
 # access 'my-config.json' with `autosave` mode enabled
 document = Document("my-config.json", autosave=True, default=[])
 # load the data
-data = document.get()  # returns a probed list
+data = document.read()  # returns a probed list
 
 # few lines of code later...
 
@@ -128,7 +128,7 @@ DEFAULT_DATA = {"name": "alex", "job": "evangelist"}
 # access 'my-config.json'
 document = Document("my-config.json", caching=True, default=DEFAULT_DATA)
 
-data = document.get()  # returns a probed dict
+data = document.read()  # returns a probed dict
 
 if data is document.cache:
     print("Same same !")

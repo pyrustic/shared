@@ -131,7 +131,7 @@ class Document:
         """
         return self._temporary
 
-    def set(self, data):
+    def write(self, data):
         """
         Set the contents of the JSON file or hackernote file.
         Return the same data or the probed version of the data if autosave is True.
@@ -146,7 +146,7 @@ class Document:
         self._dump(data)
         return data
 
-    def get(self):
+    def read(self):
         """
         Load data from the document
         """
@@ -198,7 +198,7 @@ class Document:
             data = ProbedList(items=data)
         else:
             raise error.Error("Unknown data type")
-        data.on_change = (lambda context, self=self, data=data: self.set(data))
+        data.on_change = (lambda context, self=self, data=data: self.write(data))
         return data
 
     def _ensure_name_and_directory(self):
