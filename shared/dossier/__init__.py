@@ -299,8 +299,11 @@ class Dossier:
             container = "list"
         elif isinstance(data, set):
             container = "set"
-        else:
+        elif isinstance(data, bytes):
             container = "bin"
+        else:
+            msg = "Allowed types are: dict, list, set, bytes, and pathlib.Path instance"
+            raise error.Error(msg)
         return container
 
     def _ensure_autosave(self, name, container, data):
