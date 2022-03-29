@@ -40,7 +40,7 @@ No class attributes.
 
 
 # All Methods
-[\_\_init\_\_](#__init__) &nbsp;&nbsp; [delete](#delete) &nbsp;&nbsp; [get](#get) &nbsp;&nbsp; [set](#set) &nbsp;&nbsp; [\_check\_format](#_check_format) &nbsp;&nbsp; [\_dump](#_dump) &nbsp;&nbsp; [\_ensure\_autosave](#_ensure_autosave) &nbsp;&nbsp; [\_ensure\_name\_and\_directory](#_ensure_name_and_directory) &nbsp;&nbsp; [\_load](#_load) &nbsp;&nbsp; [\_setup](#_setup)
+[\_\_init\_\_](#__init__) &nbsp;&nbsp; [delete](#delete) &nbsp;&nbsp; [read](#read) &nbsp;&nbsp; [save](#save) &nbsp;&nbsp; [write](#write) &nbsp;&nbsp; [\_check\_format](#_check_format) &nbsp;&nbsp; [\_dump](#_dump) &nbsp;&nbsp; [\_ensure\_autosave](#_ensure_autosave) &nbsp;&nbsp; [\_ensure\_name\_and\_directory](#_ensure_name_and_directory) &nbsp;&nbsp; [\_load](#_load) &nbsp;&nbsp; [\_setup](#_setup)
 
 ## \_\_init\_\_
 Init.
@@ -87,7 +87,7 @@ Returns a boolean or raise ReadonlyError
 [Back to Top](#module-overview)
 
 
-## get
+## read
 Load data from the document
 
 
@@ -103,7 +103,24 @@ Load data from the document
 [Back to Top](#module-overview)
 
 
-## set
+## save
+Save the cached data.
+Returns a boolean or raise ReadonlyError
+
+
+
+**Signature:** (self)
+
+
+
+
+
+**Return Value:** None
+
+[Back to Top](#module-overview)
+
+
+## write
 Set the contents of the JSON file or hackernote file.
 Return the same data or the probed version of the data if autosave is True.
 
