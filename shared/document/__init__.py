@@ -158,6 +158,16 @@ class Document:
             self._cache = data
         return data
 
+    def save(self):
+        """
+        Save the cached data.
+        Returns a boolean or raise ReadonlyError
+        """
+        if self._cache is None:
+            return False
+        self.write(self._cache)
+        return True
+
     def delete(self):
         """
         This method delete the document.

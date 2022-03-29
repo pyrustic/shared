@@ -1,3 +1,13 @@
+<!-- Cover -->
+<div align="center">
+    <img src="https://raw.githubusercontent.com/pyrustic/misc/master/assets/shared/cover.png" alt="Demo" width="541">
+    <p align="center">
+    <i> </i>
+    </p>
+</div>
+
+
+
 # Pyrustic Shared Data
 **Data exchange and persistence**
 
