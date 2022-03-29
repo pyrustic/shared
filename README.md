@@ -113,6 +113,8 @@ data.append("batman")  # automatically saved !
 
 When the `autosave` mode is enabled, the data is converted into a **probed** collection. In the example above, the `get` method returns a **probed** list.
 
+> **Note: Autosave does not work for subcollections. If your collection contains subcollections, you should not rely on the Autosave feature if you want to update a subcollection.**
+
 **Probed** is a Python library that gives full control over collections (`list`, `dict`, `set`), such as being notified when their contents change or filtering what is added to them.
 
 > **Discover [Probed](https://github.com/pyrustic/probed#readme) !**
@@ -253,6 +255,8 @@ new_entry = dossier.set("new_entry", data)  # returns a probed list
 new_entry.append(3.14)  # persisted !
 
 ```
+
+> **Note: Autosave does not work for subcollections. If your collection contains subcollections, you should not rely on the Autosave feature if you want to update a subcollection.**
 
 ## Readonly
 Sometimes you need to access a dossier with the guarantee that its contents will not be modified by your own code:
@@ -418,6 +422,8 @@ The constructors of all three classes have a `directory` parameter. For the **Do
 
 # Autosave feature
 When the `autosave` mode is enabled, **Document** and **Dossier** uses **Probed** to create and return `probed collections`.
+
+> **Note: Autosave does not work for subcollections. If your collection contains subcollections, you should not rely on the Autosave feature if you want to update a subcollection.**
 
 **Probed** is a Python library that gives full control over collections (`list`, `dict`, `set`), such as being notified when their contents change or filtering what is added to them.
 
