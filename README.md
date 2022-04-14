@@ -1,3 +1,6 @@
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Downloads](https://pepy.tech/badge/shared)](https://pepy.tech/project/shared)
+
 <!-- Cover -->
 <div align="center">
     <img src="https://raw.githubusercontent.com/pyrustic/misc/master/assets/shared/cover.png" alt="Demo" width="541">
