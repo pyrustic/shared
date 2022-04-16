@@ -1,4 +1,5 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![PyPI package version](https://img.shields.io/pypi/v/shared)](https://pypi.org/project/shared)
 [![Downloads](https://pepy.tech/badge/shared)](https://pepy.tech/project/shared)
 
 <!-- Cover -->
