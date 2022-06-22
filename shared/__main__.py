@@ -67,8 +67,8 @@ The current working directory is considered the dossier.
     
     Update the content of an entry
     ==============================
-    set <entry-name> <type>
-    set <entry-name> <type> <new-content-filename>
+    set <entry-name> <type>:
+    set <entry-name> <type>: <new-content-filename>
     Valid types: dict list set bin
     
     Delete a specific entry
@@ -126,7 +126,7 @@ def check_handler(*args):
         if not info:
             print(ENTRY_DOESNT_EXIST_NOTE)
             return
-        container, filename = info
+        _, container, filename = info
         size = get_file_size(filename)
         print("'{}' {} {}".format(entry, container, size))
     else:
@@ -135,7 +135,7 @@ def check_handler(*args):
             print(EMPTY_DOSSIER_NOTE)
             return
         for entry in sorted(info):
-            container, filename = info[entry]
+            _, container, filename = info[entry]
             size = get_file_size(filename)
             print("- '{}' {} {}".format(entry, container, size))
 
@@ -159,7 +159,7 @@ def get_handler(*args):
     if not info:
         print(ENTRY_DOESNT_EXIST_NOTE)
         return
-    container, filename = info
+    _, container, filename = info
     if container == "bin":
         if not os.path.exists(filename):
             print("Missing binary file '{}'".format(filename))
@@ -186,9 +186,11 @@ def set_handler(*args):
     # update entry with default value accordingly to its container type
     if len(args) == 2:
         entry, container = args
+        container = container.rstrip(":")
         update_entry_with_default_data(dossier, entry, container)
     else:
         entry, container, source_filename = args
+        container = container.rstrip(":")
         update_entry_content(dossier, entry, container, source_filename)
 
 
@@ -214,6 +216,7 @@ def update_entry_content(dossier, entry, container,
     if not os.path.exists(source_filename):
         print("Non existent filename '{}'.".format(source_filename))
         return
+    container = container.rstrip(":")
     if container not in ("bin", "dict", "list", "set"):
         print("Unknown container type '{}'.".format(container))
         return

@@ -1,7 +1,41 @@
 import os
 import os.path
+import pathlib
 import json
 import math
+from tempfile import TemporaryDirectory
+from shared import dto
+
+
+def check_target(target, directory, temporary):
+    """
+    target is either: the absolute pathname or the basename of a file.
+    Its datatype is either a string or a pathlib.Path instance.
+
+    directory is the absolute pathname of the directory in which the
+    file should be located. This value is changed if the target is already an absolute path
+    or when the temporary parameter is set to True.
+
+    temporary is a boolean to tell if either the target should be created temporarily or not
+
+    Returns a shared.dto.Target namedtuple:
+    namedtuple("name", "directory", "pathname", "tempdir")
+    """
+    # update target variable
+    if not isinstance(target, pathlib.Path):
+        target = pathlib.Path(target)
+    # update directory variable
+    if target.is_absolute():
+        directory = target.parent
+    # process temporary parameter
+    tempdir = None
+    if temporary:
+        tempdir = TemporaryDirectory()
+        directory = tempdir.name
+    # returns Target namedtuple
+    name = target.name
+    pathname = os.path.join(directory, name)
+    return dto.Target(name, directory, pathname, tempdir)
 
 
 def json_dump(json_filename, data, pretty=False):

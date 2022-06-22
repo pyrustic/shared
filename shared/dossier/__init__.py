@@ -1,13 +1,13 @@
 """Shared Data Interface"""
 import os
 import os.path
+import atexit
 import time
 import shutil
 import pathlib
-from tempfile import TemporaryDirectory
-from probed import ProbedDict, ProbedList, ProbedSet
 from shared import error
 from shared import util
+from shared import dto
 from shared.constant import DEFAULT_DIRECTORY
 
 
@@ -15,33 +15,39 @@ class Dossier:
     """
     Definition of the Dossier class
     """
-    def __init__(self, name, *, readonly=False, autosave=False,
-                 pretty_json=False, directory=DEFAULT_DIRECTORY):
+    def __init__(self, target, *, autosave=False, readonly=False, caching=True,
+                 directory=DEFAULT_DIRECTORY, temporary=False):
         """
         Init.
 
         [parameters]
-        - name: str, the name of the dossier
-        - readonly: bool, readonly mode
+        - target: target is either the absolute pathname or the basename of the dossier.
+        Its datatype is either a string or a pathlib.Path instance.
         - autosave: bool, auto-save mode
-        - pretty_json: bool, tell if whether you want JSON files to be indented or not
+        - readonly: bool, readonly mode
+        - caching: bool, tell if whether caching should be done or not
         - directory: str, the directory where dossiers will be created.
         By default, this directory is '$HOME/PyrusticHome/shared'.
         If you set None to 'directory', the dossier will be created in a temporary directory.
+        - temporary: bool, tells if dossier should be temporary or not
         """
-        self._name = name
-        self._readonly = readonly
+        self._target = target
         self._autosave = autosave
-        self._pretty_json = pretty_json
+        self._readonly = readonly
+        self._caching = caching
         self._directory = directory
-        self._dossier_path = None
+        self._temporary = temporary
+        self._compact = True
+        self._name = None
+        self._pathname = None
+        self._tempdir = None
         self._meta_filename = None
         self._meta = dict()
         self._cache = dict()
+        self._closed = False
         self._deleted = False
         self._new = False
-        self._temporary = False
-        self._tempdir = None
+        self._exit_handler_registered = False
         self._setup()
 
     @property
@@ -52,13 +58,20 @@ class Dossier:
         return self._new
 
     @property
-    def temporary(self):
-        """
-        Returns True if this Document is created in a temporary directory.
-        The database is created in a temporary directory if you
-        assign None to the constructor's "directory" parameter
-        """
-        return self._temporary
+    def cache(self):
+        return self._cache
+
+    @property
+    def name(self):
+        return self._name
+
+    @property
+    def pathname(self):
+        return self._pathname
+
+    @property
+    def closed(self):
+        return self._closed
 
     @property
     def deleted(self):
@@ -68,18 +81,11 @@ class Dossier:
         return self._deleted
 
     @property
-    def name(self):
+    def target(self):
         """
-        Return the name of the dossier
+        Return the target
         """
-        return self._name
-
-    @property
-    def readonly(self):
-        """
-        Return the state of the readonly boolean
-        """
-        return self._readonly
+        return self._target
 
     @property
     def autosave(self):
@@ -89,9 +95,18 @@ class Dossier:
         return self._autosave
 
     @property
-    def pretty_json(self):
-        """Return the value of pretty_json"""
-        return self._pretty_json
+    def readonly(self):
+        """
+        Return the state of the readonly boolean
+        """
+        return self._readonly
+
+    @property
+    def caching(self):
+        """
+        Return the state of the caching boolean
+        """
+        return self._caching
 
     @property
     def directory(self):
@@ -99,6 +114,15 @@ class Dossier:
         Return the directory path (the parent directory of the dossier)
         """
         return self._directory
+
+    @property
+    def temporary(self):
+        """
+        Returns True if this Document is created in a temporary directory.
+        The database is created in a temporary directory if you
+        assign None to the constructor's "directory" parameter
+        """
+        return self._temporary
 
     def set(self, name, data):
         """
@@ -109,14 +133,13 @@ class Dossier:
         - data: a dict, a list, a set, binary data, or an instance of pathlib.Path
 
         [return]
-        This method will return a path if the entry is a binary data.
-        SharedDict, SharedList, SharedSet are returned respectively if the entry
-        is a dict, a list or a set, respectively, and if autosave is True.
-        You can call the method "save" on the instances of SharedDict, SharedList,
-        or SharedSet.
+        This method will return the same data if it is a dict, a list, or a set.
+        A pathname will be returned if the data saved is binary data.
         """
         if self._deleted:
             raise error.AlreadyDeletedError
+        if self._closed:
+            raise error.AlreadyClosedError
         if self._readonly:
             raise error.ReadonlyError
         if data is None:
@@ -124,7 +147,10 @@ class Dossier:
             raise error.Error(msg)
         data = self._ensure_data(data)
         container = self._get_container(data)
-        return self._save(name, container, data)
+        result = self._save(name, container, data)
+        if self._caching and container != "bin":
+            self._cache[name] = data
+        return result
 
     def get(self, name, default=None):
         """
@@ -132,16 +158,18 @@ class Dossier:
 
         [parameters]
         - name: the name of the entry.
-        - default: a dict, a list, a set or binary data to return if the entry doesn't exist.
+        - default: a dict, a list, a set or binary data that will replace a non-existent entry
 
         [return]
-        This method returns None if the entry isn't in the dossier.
+        This method returns None if the entry isn't in the dossier, else it returns a dict, a list,
+        or a set.
         A path is returned if the entry requested exists and is a binary data.
-        SharedDict, SharedList, SharedSet are returned respectively if the entry
-        requested is a dict, a list or a set, respectively, and if autosave is set to True
+
         """
         if self._deleted:
             raise error.AlreadyDeletedError
+        if self._closed:
+            raise error.AlreadyClosedError
         self._load_meta()
         info = self._meta.get(name)
         if info is None:
@@ -153,7 +181,9 @@ class Dossier:
         if container == "bin":
             return filename
         data = util.json_load(filename)
-        return self._ensure_autosave(name, container, data)
+        if self._caching:
+            self._cache[name] = data
+        return data
 
     def check(self, name=None):
         """Return basic information about the dossier or a specific entry
@@ -163,21 +193,39 @@ class Dossier:
         basic information about the dossier will be returned
 
         [return]
-        If there is a specific entry name, returns a tuple (container, filename).
-        Else returns a dictionary. Each key represents an entry.
-        Example: {"entry_1": ("dict", "/path/to/contents"), ...}.
-
+        If there is a specific entry name, returns a namedtuple (container, filename).
+        Else returns a dictionary of all entries. Each key represents an entry.
+        Example: {"entry_1": namedtuple(container="dict", location="/path/to/contents"), ...}.
         """
         if self._deleted:
             raise error.AlreadyDeletedError
+        if self._closed:
+            raise error.AlreadyClosedError
         self._load_meta()
         if name:
             info = self._meta.get(name)
-            return self._check_info(info)
+            return self._get_entry_info_dto(name, info)
         cache = dict()
         for name, info in self._meta.items():
-            cache[name] = self._check_info(info)
+            cache[name] = self._get_entry_info_dto(name, info)
         return cache
+
+    def close(self):
+        """
+        This method closes the access to the document.
+        """
+        if self._deleted:
+            raise error.AlreadyDeletedError
+        if self._closed:
+            return False
+        self._unregister_exit_handler()
+        if self._tempdir:
+            self._tempdir.cleanup()
+        elif self._autosave:
+            self._save_cache()
+        self._cache = None
+        self._closed = True
+        return True
 
     def delete(self, *names):
         """
@@ -192,64 +240,58 @@ class Dossier:
         Returns a boolean or raise ReadonlyError
         """
         if self._deleted:
-            raise error.AlreadyDeletedError
+            return False
+        if self._closed:
+            raise error.AlreadyClosedError
         if self._readonly:
             raise error.ReadonlyError
         if not util.valid_dossier(self._name, self._directory):
             return False
         if not names:  # delete dossier
-            shutil.rmtree(self._dossier_path)
-            if self._tempdir:
-                self._tempdir.cleanup()
-            self._deleted = True
-        else:
-            self._load_meta()
-            for name in names:
-                info = self._meta.get(name)
-                if not info:
-                    continue
-                del self._meta[name]
-                container, file_id = info
-                filename = self._get_filename(file_id)
-                if os.path.isfile(filename):
-                    os.remove(filename)
-            self._save_meta()
+            self._delete_dossier()
+        else:  # delete specific entries
+            self._delete_specific_entries(names)
         return True
 
     def _setup(self):
-        self._ensure_directory()
-        self._dossier_path = os.path.join(self._directory, self._name)
-        self._meta_filename = os.path.join(self._dossier_path, "DOSSIER")
+        self._update_variables()
+        self._make_directory()
+        self._meta_filename = os.path.join(self._pathname, "DOSSIER")
         self._create_dossier()
         self._load_meta()
+        if self._autosave:
+            if not self._caching:
+                msg = "Autosave works only with `caching` set to True"
+                raise error.Error(msg)
+            self._register_exit_handler()
 
-    def _ensure_directory(self):
-        if self._directory:
-            try:
-                os.makedirs(self._directory)
-            except FileExistsError:
-                pass
-        else:
-            # Turn on Temporary Mode if self._directory is set to None
-            self._tempdir = TemporaryDirectory()
-            self._directory = self._tempdir.name
-            self._temporary = True
+    def _update_variables(self):
+        info = util.check_target(self._target, self._directory, self._temporary)
+        self._name, self._directory, self._pathname, self._tempdir = info
+
+    def _make_directory(self):
+        if self._temporary:
+            return
+        try:
+            os.makedirs(self._directory)
+        except FileExistsError:
+            pass
 
     def _create_dossier(self):
         if util.valid_dossier(self._name, self._directory):
             return
         # create dossier folder
         try:
-            os.makedirs(self._dossier_path)
+            os.makedirs(self._pathname)
         except FileExistsError:
             pass
         # create data dir inside dossier folder
         try:
-            os.mkdir(os.path.join(self._dossier_path, "data"))
+            os.mkdir(os.path.join(self._pathname, "data"))
         except FileExistsError:
             pass
         # create meta file
-        util.json_dump(self._meta_filename, dict(), pretty=self._pretty_json)
+        util.json_dump(self._meta_filename, dict(), pretty=self._compact)
         # is new dossier
         self._new = True
 
@@ -263,22 +305,14 @@ class Dossier:
         self._meta[name] = (container, file_id)
         self._save_meta()
         if container == "set":
-            data = self._set_to_dict(data)
+            data = self._convert_set_into_dict(data)
+        # dict, list, set
         if container in ("dict", "list", "set"):
-            return self._save_collection(name, container, data, filename)
-        else:  # "bin"
-            with open(filename, "wb") as file:
-                file.write(data)
-            return filename
-
-    def _save_collection(self, name, container, data, filename):
-        util.json_dump(filename, data, pretty=self._pretty_json)
-        if (isinstance(data, ProbedDict)
-                or isinstance(data, ProbedList)
-                or isinstance(data, ProbedSet)):
-            self._update_on_change_callback(name, data)
+            self._save_collection(filename, data)
             return data
-        return self._ensure_autosave(name, container, data)
+        # "bin"
+        self._save_bin(filename, data)
+        return filename
 
     def _get_file_id(self, name):
         info = self._meta.get(name)
@@ -288,9 +322,16 @@ class Dossier:
             _, file_id = info
         return file_id
 
+    def _save_collection(self, filename, data):
+        util.json_dump(filename, data, pretty=self._compact)
+
+    def _save_bin(self, filename, data):
+        with open(filename, "wb") as file:
+            file.write(data)
+
     def _save_meta(self):
         util.json_dump(self._meta_filename, self._meta,
-                       pretty=self._pretty_json)
+                       pretty=self._compact)
 
     def _get_container(self, data):
         if isinstance(data, dict):
@@ -306,36 +347,17 @@ class Dossier:
             raise error.Error(msg)
         return container
 
-    def _ensure_autosave(self, name, container, data):
-        if not self._autosave or data is None:
-            return data
-        if container == "dict":
-            cache = ProbedDict(items=data)
-        elif container == "list":
-            cache = ProbedList(items=data)
-        elif container == "set":
-            cache = ProbedSet(items=data)
-        else:
-            raise error.Error("Unknown container '{}'.".format(container))
-        self._update_on_change_callback(name, cache)
-        return cache
-
     def _ensure_data(self, data):
         if isinstance(data, pathlib.Path):
             with open(data.resolve(), "rb") as file:
                 return file.read()
         return data
 
-    def _update_on_change_callback(self, name, probed_collection):
-        probed_collection.on_change = (lambda context, self=self,
-                                              name=name, data=probed_collection:
-                                       self.set(name, data))
-
-    def _set_to_dict(self, data):
+    def _convert_set_into_dict(self, data):
         return {item: None for item in data}
 
     def _get_filename(self, file_id):
-        return os.path.join(self._dossier_path, "data", file_id)
+        return os.path.join(self._pathname, "data", file_id)
 
     def _gen_file_id(self):
         while True:
@@ -345,9 +367,56 @@ class Dossier:
             if not os.path.exists(filename):
                 return file_id
 
-    def _check_info(self, info):
+    def _get_entry_info_dto(self, name, info):
         if info is None:
             return None
         container, file_id = info
         filename = self._get_filename(file_id)
-        return container, filename
+        return dto.DossierEntryInfo(name, container, filename)
+
+    def _register_exit_handler(self):
+        if self._exit_handler_registered:
+            return
+        atexit.register(self._exit_handler)
+        self._exit_handler_registered = True
+
+    def _unregister_exit_handler(self):
+        if not self._exit_handler_registered:
+            return
+        atexit.unregister(self._exit_handler)
+        self._exit_handler_registered = False
+
+    def _save_cache(self):
+        if not self._cache:
+            return False
+        for key, value in self._cache:
+            self.set(key, value)
+        return True
+
+    def _delete_dossier(self):
+        shutil.rmtree(self._pathname)
+        if self._tempdir:
+            self._tempdir.cleanup()
+        self._autosave = False
+        self.close()
+        self._deleted = True
+
+    def _delete_specific_entries(self, names):
+        self._load_meta()
+        for name in names:
+            info = self._meta.get(name)
+            if not info:
+                continue
+            del self._meta[name]
+            if name in self._cache:
+                del self._cache[name]
+            container, file_id = info
+            filename = self._get_filename(file_id)
+            if os.path.isfile(filename):
+                os.remove(filename)
+        self._save_meta()
+
+    def _exit_handler(self):
+        self._unregister_exit_handler()
+        if not self._closed:
+            self._save_cache()

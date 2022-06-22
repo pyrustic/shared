@@ -6,6 +6,7 @@ import pathlib
 import sqlite3 as sqlite
 from shared.constant import DEFAULT_DIRECTORY
 from shared import error
+from shared import dto
 
 
 class Database:
@@ -173,11 +174,13 @@ class Database:
         """
         Use this method to query your database.
         Formally: Data Query Language (DQL)
-        It returns a tuple: (data, description).
-                Data is a list with data from ur query.
-                Description is a list with the name of columns related to data
-            Example: ( [1, "Jack", 50], ["id", "name", "age"] )
-            This method can raise sqlite.Error, sqlite.Warning
+        It returns a namedtuple: (columns, data).
+        Columns is a list of strings, columns names.
+        Data is a list with data from ur query.
+            Example:
+                namedtuple(columns=["id", "name", "age"],
+                        data= ( [1, "Jack", 50], ...) )
+        This method can raise sqlite.Error, sqlite.Warning
         """
         if self._deleted:
             raise error.AlreadyDeletedError
@@ -200,7 +203,8 @@ class Database:
             finally:
                 if cur:
                     cur.close()
-            return [x[0] for x in description], data
+            columns = [x[0] for x in description]
+            return dto.QueryResult(columns, data)
 
     def script(self, script):
         """
@@ -279,14 +283,13 @@ class Database:
 
     def get_columns(self, table):
         """
-        Returns the list of columns names of the given table name
-        A column is like:
-            (int_id, str_column_name, str_column_datatype, int_boolean_nullability,
-            default_value, int_primary_key)
+        Returns information about the columns of a given table
+        A column is a namedtuple:
+            namedtuple(index, name, type, not_null, default, primary_key)
         Example:
-            [(0, "id", "INTEGER", 1, None, 1),
-            (1, "name", "TEXT", 0, None, 0),
-            (2, "age", "INTEGER", 1, None, 0)]
+            [namedtuple(0, "id", "INTEGER", 1, None, 1),
+            namedtuple(1, "name", "TEXT", 0, None, 0),
+            namedtuple(2, "age", "INTEGER", 1, None, 0)]
 
         This method can raise sqlite.Error, sqlite.Warning
         """
@@ -298,7 +301,7 @@ class Database:
             try:
                 cur = self._connection.cursor()
                 cur.execute("pragma table_info('{}')".format(table))
-                data = cur.fetchall()
+                cache = cur.fetchall()
             except sqlite.Error as e:
                 if self._raise_exception:
                     raise
@@ -308,6 +311,9 @@ class Database:
             finally:
                 if cur:
                     cur.close()
+            for item in cache:
+                info = dto.ColumnInfo(*item)
+                data.append(info)
             return data
 
     def close(self):
