@@ -8,9 +8,9 @@ The Shared Data Interface
 
 > **Classes:** &nbsp; [Database](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/classes/Database.md#class-database) &nbsp;&nbsp; [Document](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/classes/Document.md#class-document) &nbsp;&nbsp; [Dossier](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/classes/Dossier.md#class-dossier)
 >
-> **Functions:** &nbsp; None
+> **Functions:** &nbsp; [autosave](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/functions.md#autosave) &nbsp;&nbsp; [create](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/functions.md#create) &nbsp;&nbsp; [get\_key\_value](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/functions.md#get_key_value) &nbsp;&nbsp; [readonly](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/functions.md#readonly) &nbsp;&nbsp; [write](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/functions.md#write)
 >
-> **Constants:** &nbsp; None
+> **Constants:** &nbsp; DEFAULT_DIRECTORY
 
 # Class Database
 Definition of the Database class
@@ -158,14 +158,13 @@ This method can raise sqlite.Error, sqlite.Warning
 
 
 ## get\_columns
-Returns the list of columns names of the given table name
-A column is like:
-    (int_id, str_column_name, str_column_datatype, int_boolean_nullability,
-    default_value, int_primary_key)
+Returns information about the columns of a given table
+A column is a namedtuple:
+    namedtuple(index, name, type, not_null, default, primary_key)
 Example:
-    [(0, "id", "INTEGER", 1, None, 1),
-    (1, "name", "TEXT", 0, None, 0),
-    (2, "age", "INTEGER", 1, None, 0)]
+    [namedtuple(0, "id", "INTEGER", 1, None, 1),
+    namedtuple(1, "name", "TEXT", 0, None, 0),
+    namedtuple(2, "age", "INTEGER", 1, None, 0)]
 
 This method can raise sqlite.Error, sqlite.Warning
 
@@ -203,11 +202,13 @@ This method can raise sqlite.Error, sqlite.Warning
 ## query
 Use this method to query your database.
 Formally: Data Query Language (DQL)
-It returns a tuple: (data, description).
-        Data is a list with data from ur query.
-        Description is a list with the name of columns related to data
-    Example: ( [1, "Jack", 50], ["id", "name", "age"] )
-    This method can raise sqlite.Error, sqlite.Warning
+It returns a namedtuple: (columns, data).
+Columns is a list of strings, columns names.
+Data is a list with data from ur query.
+    Example:
+        namedtuple(columns=["id", "name", "age"],
+                data= ( [1, "Jack", 50], ...) )
+This method can raise sqlite.Error, sqlite.Warning
 
 
 
@@ -242,7 +243,7 @@ script could be a path (pathlib.Path) to a file, a file-like object or just a st
 
 
 ## \_create\_connection
-None
+No description
 
 
 
@@ -258,7 +259,7 @@ None
 
 
 ## \_ensure\_filename\_and\_directory
-None
+No description
 
 
 
@@ -274,7 +275,7 @@ None
 
 
 ## \_setup
-None
+No description
 
 
 

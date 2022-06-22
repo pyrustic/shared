@@ -8,9 +8,9 @@ The Shared Data Interface
 
 > **Classes:** &nbsp; [Database](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/classes/Database.md#class-database) &nbsp;&nbsp; [Document](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/classes/Document.md#class-document) &nbsp;&nbsp; [Dossier](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/classes/Dossier.md#class-dossier)
 >
-> **Functions:** &nbsp; None
+> **Functions:** &nbsp; [autosave](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/functions.md#autosave) &nbsp;&nbsp; [create](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/functions.md#create) &nbsp;&nbsp; [get\_key\_value](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/functions.md#get_key_value) &nbsp;&nbsp; [readonly](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/functions.md#readonly) &nbsp;&nbsp; [write](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/functions.md#write)
 >
-> **Constants:** &nbsp; None
+> **Constants:** &nbsp; DEFAULT_DIRECTORY
 
 # Class Dossier
 Definition of the Dossier class
@@ -25,18 +25,22 @@ No class attributes.
 |Property|Type|Description|Inherited from|
 |---|---|---|---|
 |autosave|getter|Return the state of the autosave boolean||
+|cache|getter|None||
+|caching|getter|Return the state of the caching boolean||
+|closed|getter|None||
 |deleted|getter|Returns True if this dossier has been deleted through this object||
 |directory|getter|Return the directory path (the parent directory of the dossier)||
-|name|getter|Return the name of the dossier||
+|name|getter|None||
 |new|getter|Returns True if this dossier is newly created, else return False||
-|pretty_json|getter|Return the value of pretty_json||
+|pathname|getter|None||
 |readonly|getter|Return the state of the readonly boolean||
+|target|getter|Return the target||
 |temporary|getter|Returns True if this Document is created in a temporary directory. The database is created in a temporary directory if you assign None to the constructor's "directory" parameter||
 
 
 
 # All Methods
-[\_\_init\_\_](#__init__) &nbsp;&nbsp; [check](#check) &nbsp;&nbsp; [delete](#delete) &nbsp;&nbsp; [get](#get) &nbsp;&nbsp; [set](#set) &nbsp;&nbsp; [\_check\_info](#_check_info) &nbsp;&nbsp; [\_create\_dossier](#_create_dossier) &nbsp;&nbsp; [\_ensure\_autosave](#_ensure_autosave) &nbsp;&nbsp; [\_ensure\_data](#_ensure_data) &nbsp;&nbsp; [\_ensure\_directory](#_ensure_directory) &nbsp;&nbsp; [\_gen\_file\_id](#_gen_file_id) &nbsp;&nbsp; [\_get\_container](#_get_container) &nbsp;&nbsp; [\_get\_file\_id](#_get_file_id) &nbsp;&nbsp; [\_get\_filename](#_get_filename) &nbsp;&nbsp; [\_load\_meta](#_load_meta) &nbsp;&nbsp; [\_save](#_save) &nbsp;&nbsp; [\_save\_collection](#_save_collection) &nbsp;&nbsp; [\_save\_meta](#_save_meta) &nbsp;&nbsp; [\_set\_to\_dict](#_set_to_dict) &nbsp;&nbsp; [\_setup](#_setup) &nbsp;&nbsp; [\_update\_on\_change\_callback](#_update_on_change_callback)
+[\_\_init\_\_](#__init__) &nbsp;&nbsp; [check](#check) &nbsp;&nbsp; [close](#close) &nbsp;&nbsp; [delete](#delete) &nbsp;&nbsp; [get](#get) &nbsp;&nbsp; [set](#set) &nbsp;&nbsp; [\_convert\_set\_into\_dict](#_convert_set_into_dict) &nbsp;&nbsp; [\_create\_dossier](#_create_dossier) &nbsp;&nbsp; [\_delete\_dossier](#_delete_dossier) &nbsp;&nbsp; [\_delete\_specific\_entries](#_delete_specific_entries) &nbsp;&nbsp; [\_ensure\_data](#_ensure_data) &nbsp;&nbsp; [\_exit\_handler](#_exit_handler) &nbsp;&nbsp; [\_gen\_file\_id](#_gen_file_id) &nbsp;&nbsp; [\_get\_container](#_get_container) &nbsp;&nbsp; [\_get\_entry\_info\_dto](#_get_entry_info_dto) &nbsp;&nbsp; [\_get\_file\_id](#_get_file_id) &nbsp;&nbsp; [\_get\_filename](#_get_filename) &nbsp;&nbsp; [\_load\_meta](#_load_meta) &nbsp;&nbsp; [\_make\_directory](#_make_directory) &nbsp;&nbsp; [\_register\_exit\_handler](#_register_exit_handler) &nbsp;&nbsp; [\_save](#_save) &nbsp;&nbsp; [\_save\_bin](#_save_bin) &nbsp;&nbsp; [\_save\_cache](#_save_cache) &nbsp;&nbsp; [\_save\_collection](#_save_collection) &nbsp;&nbsp; [\_save\_meta](#_save_meta) &nbsp;&nbsp; [\_setup](#_setup) &nbsp;&nbsp; [\_unregister\_exit\_handler](#_unregister_exit_handler) &nbsp;&nbsp; [\_update\_variables](#_update_variables)
 
 ## \_\_init\_\_
 Init.
@@ -44,15 +48,16 @@ Init.
 
 
 
-**Signature:** (self, name, \*, readonly=False, autosave=False, pretty\_json=False, directory='/home/alex/PyrusticHome/shared')
+**Signature:** (self, target, \*, autosave=False, readonly=False, caching=True, directory='/home/alex/PyrusticHome/shared', temporary=False)
 
 |Parameter|Description|
 |---|---|
-|name|str, the name of the dossier|
-|readonly|bool, readonly mode|
+|target|target is either the absolute pathname or the basename of the dossier. Its datatype is either a string or a pathlib.Path instance.|
 |autosave|bool, auto-save mode|
-|pretty\_json|bool, tell if whether you want JSON files to be indented or not|
+|readonly|bool, readonly mode|
+|caching|bool, tell if whether caching should be done or not|
 |directory|str, the directory where dossiers will be created. By default, this directory is '$HOME/PyrusticHome/shared'. If you set None to 'directory', the dossier will be created in a temporary directory.|
+|temporary|bool, tells if dossier should be temporary or not|
 
 
 
@@ -79,9 +84,25 @@ Return basic information about the dossier or a specific entry
 
 
 
-**Return Value:** If there is a specific entry name, returns a tuple (container, filename).
-Else returns a dictionary. Each key represents an entry.
-Example: {"entry_1": ("dict", "/path/to/contents"), ...}.
+**Return Value:** If there is a specific entry name, returns a namedtuple (container, filename).
+Else returns a dictionary of all entries. Each key represents an entry.
+Example: {"entry_1": namedtuple(container="dict", location="/path/to/contents"), ...}.
+
+[Back to Top](#module-overview)
+
+
+## close
+This method closes the access to the document.
+
+
+
+**Signature:** (self)
+
+
+
+
+
+**Return Value:** None
 
 [Back to Top](#module-overview)
 
@@ -119,16 +140,15 @@ Get an entry.
 |Parameter|Description|
 |---|---|
 |name|the name of the entry.|
-|default|a dict, a list, a set or binary data to return if the entry doesn't exist. |
+|default|a dict, a list, a set or binary data that will replace a non-existent entry |
 
 
 
 
 
-**Return Value:** This method returns None if the entry isn't in the dossier.
+**Return Value:** This method returns None if the entry isn't in the dossier, else it returns a dict, a list,
+or a set.
 A path is returned if the entry requested exists and is a binary data.
-SharedDict, SharedList, SharedSet are returned respectively if the entry
-requested is a dict, a list or a set, respectively, and if autosave is set to True
 
 [Back to Top](#module-overview)
 
@@ -150,65 +170,14 @@ Set an entry.
 
 
 
-**Return Value:** This method will return a path if the entry is a binary data.
-SharedDict, SharedList, SharedSet are returned respectively if the entry
-is a dict, a list or a set, respectively, and if autosave is True.
-You can call the method "save" on the instances of SharedDict, SharedList,
-or SharedSet.
+**Return Value:** This method will return the same data if it is a dict, a list, or a set.
+A pathname will be returned if the data saved is binary data.
 
 [Back to Top](#module-overview)
 
 
-## \_check\_info
-None
-
-
-
-**Signature:** (self, info)
-
-
-
-
-
-**Return Value:** None
-
-[Back to Top](#module-overview)
-
-
-## \_create\_dossier
-None
-
-
-
-**Signature:** (self)
-
-
-
-
-
-**Return Value:** None
-
-[Back to Top](#module-overview)
-
-
-## \_ensure\_autosave
-None
-
-
-
-**Signature:** (self, name, container, data)
-
-
-
-
-
-**Return Value:** None
-
-[Back to Top](#module-overview)
-
-
-## \_ensure\_data
-None
+## \_convert\_set\_into\_dict
+No description
 
 
 
@@ -223,8 +192,72 @@ None
 [Back to Top](#module-overview)
 
 
-## \_ensure\_directory
-None
+## \_create\_dossier
+No description
+
+
+
+**Signature:** (self)
+
+
+
+
+
+**Return Value:** None
+
+[Back to Top](#module-overview)
+
+
+## \_delete\_dossier
+No description
+
+
+
+**Signature:** (self)
+
+
+
+
+
+**Return Value:** None
+
+[Back to Top](#module-overview)
+
+
+## \_delete\_specific\_entries
+No description
+
+
+
+**Signature:** (self, names)
+
+
+
+
+
+**Return Value:** None
+
+[Back to Top](#module-overview)
+
+
+## \_ensure\_data
+No description
+
+
+
+**Signature:** (self, data)
+
+
+
+
+
+**Return Value:** None
+
+[Back to Top](#module-overview)
+
+
+## \_exit\_handler
+No description
 
 
 
@@ -240,7 +273,7 @@ None
 
 
 ## \_gen\_file\_id
-None
+No description
 
 
 
@@ -256,7 +289,7 @@ None
 
 
 ## \_get\_container
-None
+No description
 
 
 
@@ -271,8 +304,24 @@ None
 [Back to Top](#module-overview)
 
 
+## \_get\_entry\_info\_dto
+No description
+
+
+
+**Signature:** (self, name, info)
+
+
+
+
+
+**Return Value:** None
+
+[Back to Top](#module-overview)
+
+
 ## \_get\_file\_id
-None
+No description
 
 
 
@@ -288,7 +337,7 @@ None
 
 
 ## \_get\_filename
-None
+No description
 
 
 
@@ -304,7 +353,39 @@ None
 
 
 ## \_load\_meta
-None
+No description
+
+
+
+**Signature:** (self)
+
+
+
+
+
+**Return Value:** None
+
+[Back to Top](#module-overview)
+
+
+## \_make\_directory
+No description
+
+
+
+**Signature:** (self)
+
+
+
+
+
+**Return Value:** None
+
+[Back to Top](#module-overview)
+
+
+## \_register\_exit\_handler
+No description
 
 
 
@@ -320,7 +401,7 @@ None
 
 
 ## \_save
-None
+No description
 
 
 
@@ -335,12 +416,44 @@ None
 [Back to Top](#module-overview)
 
 
+## \_save\_bin
+No description
+
+
+
+**Signature:** (self, filename, data)
+
+
+
+
+
+**Return Value:** None
+
+[Back to Top](#module-overview)
+
+
+## \_save\_cache
+No description
+
+
+
+**Signature:** (self)
+
+
+
+
+
+**Return Value:** None
+
+[Back to Top](#module-overview)
+
+
 ## \_save\_collection
-None
+No description
 
 
 
-**Signature:** (self, name, container, data, filename)
+**Signature:** (self, filename, data)
 
 
 
@@ -352,27 +465,11 @@ None
 
 
 ## \_save\_meta
-None
+No description
 
 
 
 **Signature:** (self)
-
-
-
-
-
-**Return Value:** None
-
-[Back to Top](#module-overview)
-
-
-## \_set\_to\_dict
-None
-
-
-
-**Signature:** (self, data)
 
 
 
@@ -384,7 +481,7 @@ None
 
 
 ## \_setup
-None
+No description
 
 
 
@@ -399,12 +496,28 @@ None
 [Back to Top](#module-overview)
 
 
-## \_update\_on\_change\_callback
-None
+## \_unregister\_exit\_handler
+No description
 
 
 
-**Signature:** (self, name, probed\_collection)
+**Signature:** (self)
+
+
+
+
+
+**Return Value:** None
+
+[Back to Top](#module-overview)
+
+
+## \_update\_variables
+No description
+
+
+
+**Signature:** (self)
 
 
 

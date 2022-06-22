@@ -12,7 +12,7 @@ Errors classes
 >
 > **Constants:** &nbsp; None
 
-# Class AlreadyDeletedError
+# Class AlreadyClosedError
 Common base class for all non-exit exceptions.
 
 ## Base Classes
