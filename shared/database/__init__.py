@@ -9,7 +9,7 @@ from shared import error
 from shared import dto
 
 
-class Database:
+class Database:  # TODO: add "temporary" and turn name into target
     """
     Definition of the Database class
     """

@@ -552,7 +552,7 @@ Right-click on the folder with your mouse, then send it safely to the trash ;)
 
 
 # Installation
-**Shared** is **cross platform** and versions under **1.0.0** will be considered **Beta** at best. It is built on [Ubuntu](https://ubuntu.com/download/desktop) with [Python 3.8](https://www.python.org/downloads/) and should work on **Python 3.5** or **newer**.
+**Shared** is **cross platform** and versions under **1.0.0** will be considered **Beta** at best. It should work on **Python 3.5** or [newer](https://www.python.org/downloads/).
 
 ## For the first time
 
