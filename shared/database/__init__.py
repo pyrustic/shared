@@ -5,29 +5,30 @@ import threading
 import pathlib
 import sqlite3 as sqlite
 from shared.constant import DEFAULT_DIRECTORY
-from shared import error
-from shared import dto
+from shared import error, dto, util
 
 
 class Database:  # TODO: add "temporary" and turn name into target
     """
     Definition of the Database class
     """
-    def __init__(self, name, *, readonly=False, init_script=None,
-                 directory=DEFAULT_DIRECTORY, raise_exception=True,
-                 raise_warning=True, connection_kwargs=None):
+    def __init__(self, target, *, init_script=None, readonly=False,
+                 directory=DEFAULT_DIRECTORY, temporary=False,
+                 raise_exception=True, raise_warning=True,
+                 connection_kwargs=None):
         """
         Init
 
         [parameters]
-        - name: the name of the database
-
-        - readonly: boolean to set the database in the read-only state
+        - target: target is either the absolute pathname or the basename of a file.
+        Its datatype is either a string or a pathlib.Path instance.
 
         - init_script: a path to a file (an instance of pathlib.Path),
-         a file-like object or a string of sql code
+         a file-like object or a string of sql code.
             Example_a: "CREATE TABLE my_table(id INTEGER NOT NULL PRIMARY KEY);".
             Example_b: pathlib.Path("/path/to/script.sql").
+
+        - readonly: boolean to set the database in the read-only state
 
         - directory: path to directory where the database will be created.
         Set directory to None if you want the database to be created in memory.
@@ -39,15 +40,17 @@ class Database:  # TODO: add "temporary" and turn name into target
         - connection_kwargs: connections arguments used while calling the
          method "sqlite.connect()"
         """
-        self._name = name
-        self._readonly = readonly
+        self._target = target
         self._init_script = init_script
+        self._readonly = readonly
         self._directory = directory
+        self._temporary = temporary
         self._raise_exception = raise_exception
         self._raise_warning = raise_warning
         self._connection_kwargs = connection_kwargs if connection_kwargs else dict()
+        self._name = None
+        self._pathname = None
         self._lock = threading.Lock()
-        self._temporary = False
         self._connection = None
         self._closed = False
         self._deleted = False
@@ -353,42 +356,42 @@ class Database:  # TODO: add "temporary" and turn name into target
             raise error.ReadonlyError
         if not self._closed:
             self.close()
-        if self._filename == ":memory:":
+        if self._temporary:
             return True
-        if not os.path.isfile(self._filename):
+        if not os.path.isfile(self._pathname):
             return False
-        os.remove(self._filename)
+        os.remove(self._pathname)
         self._deleted = True
         return True
 
     def _setup(self):
-        self._ensure_filename_and_directory()
+        self._update_variables()
+        self._make_directory()
         self._create_connection()
         if self._new and self._init_script:
             self.script(self._init_script)
 
-    def _ensure_filename_and_directory(self):
-        if self._directory:
-            try:
-                os.makedirs(self._directory)
-            except FileExistsError:
-                pass
-            self._filename = os.path.join(self._directory,
-                                          self._name)
+    def _update_variables(self):
+        info = util.check_target(self._target, self._directory, False)
+        self._name, self._directory, self._pathname, self._tempdir = info
 
-            if not os.path.isfile(self._filename):
-                self._new = True
-        else:
-            self._filename = ":memory:"
-            self._temporary = True
+    def _make_directory(self):
+        if self._temporary:
+            self._new = True
+            return
+        try:
+            os.makedirs(self._directory)
+        except FileExistsError:
+            pass
+        if not os.path.isfile(self._pathname):
             self._new = True
 
     def _create_connection(self):
         try:
             if "check_same_thread" in self._connection_kwargs:
                 del self._connection_kwargs["check_same_thread"]
-            self._connection = sqlite.connect(self._filename,
-                                              check_same_thread=False,
+            db = ":memory:" if self._temporary else self._pathname
+            self._connection = sqlite.connect(db, check_same_thread=False,
                                               **self._connection_kwargs)
         except sqlite.Error as e:
             raise e
@@ -407,8 +410,8 @@ class Database:  # TODO: add "temporary" and turn name into target
         if isinstance(script, str):
             return script
         if isinstance(script, pathlib.Path):
-            filename = script.resolve()
-            with open(filename, "r") as file:
+            pathname = script.resolve()
+            with open(pathname, "r") as file:
                 return file.read()
         # if script is a file-like object
         return script.read()

@@ -37,7 +37,7 @@ No class attributes.
 
 
 # All Methods
-[\_\_init\_\_](#__init__) &nbsp;&nbsp; [check](#check) &nbsp;&nbsp; [close](#close) &nbsp;&nbsp; [delete](#delete) &nbsp;&nbsp; [edit](#edit) &nbsp;&nbsp; [export](#export) &nbsp;&nbsp; [get\_columns](#get_columns) &nbsp;&nbsp; [get\_tables](#get_tables) &nbsp;&nbsp; [query](#query) &nbsp;&nbsp; [script](#script) &nbsp;&nbsp; [\_create\_connection](#_create_connection) &nbsp;&nbsp; [\_ensure\_filename\_and\_directory](#_ensure_filename_and_directory) &nbsp;&nbsp; [\_setup](#_setup) &nbsp;&nbsp; [\_stringify\_script](#_stringify_script)
+[\_\_init\_\_](#__init__) &nbsp;&nbsp; [check](#check) &nbsp;&nbsp; [close](#close) &nbsp;&nbsp; [delete](#delete) &nbsp;&nbsp; [edit](#edit) &nbsp;&nbsp; [export](#export) &nbsp;&nbsp; [get\_columns](#get_columns) &nbsp;&nbsp; [get\_tables](#get_tables) &nbsp;&nbsp; [query](#query) &nbsp;&nbsp; [script](#script) &nbsp;&nbsp; [\_create\_connection](#_create_connection) &nbsp;&nbsp; [\_make\_directory](#_make_directory) &nbsp;&nbsp; [\_setup](#_setup) &nbsp;&nbsp; [\_stringify\_script](#_stringify_script) &nbsp;&nbsp; [\_update\_variables](#_update_variables)
 
 ## \_\_init\_\_
 Init
@@ -45,13 +45,13 @@ Init
 
 
 
-**Signature:** (self, name, \*, readonly=False, init\_script=None, directory='/home/alex/PyrusticHome/shared', raise\_exception=True, raise\_warning=True, connection\_kwargs=None)
+**Signature:** (self, target, \*, init\_script=None, readonly=False, directory='/home/alex/PyrusticHome/shared', temporary=False, raise\_exception=True, raise\_warning=True, connection\_kwargs=None)
 
 |Parameter|Description|
 |---|---|
-|name|the name of the database |
+|target|target is either the absolute pathname or the basename of a file. Its datatype is either a string or a pathlib.Path instance. |
+|init\_script|a path to a file (an instance of pathlib.Path), a file-like object or a string of sql code. Example_a: "CREATE TABLE my_table(id INTEGER NOT NULL PRIMARY KEY);". Example_b: pathlib.Path("/path/to/script.sql"). |
 |readonly|boolean to set the database in the read-only state |
-|init\_script|a path to a file (an instance of pathlib.Path), a file-like object or a string of sql code Example_a: "CREATE TABLE my_table(id INTEGER NOT NULL PRIMARY KEY);". Example_b: pathlib.Path("/path/to/script.sql"). |
 |directory|path to directory where the database will be created. Set directory to None if you want the database to be created in memory. |
 |raise\_exception|By default, True, so exceptions (sqlite.Error) will be raised |
 |raise\_warning|By default, True, so exceptions (sqlite.Warning) will be raised |
@@ -258,7 +258,7 @@ No description
 [Back to Top](#module-overview)
 
 
-## \_ensure\_filename\_and\_directory
+## \_make\_directory
 No description
 
 
@@ -302,6 +302,22 @@ This method will:
 
 
 **Signature:** (self, script)
+
+
+
+
+
+**Return Value:** None
+
+[Back to Top](#module-overview)
+
+
+## \_update\_variables
+No description
+
+
+
+**Signature:** (self)
 
 
 

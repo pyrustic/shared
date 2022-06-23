@@ -5,9 +5,7 @@ import atexit
 import time
 import shutil
 import pathlib
-from shared import error
-from shared import util
-from shared import dto
+from shared import error, util, dto
 from shared.constant import DEFAULT_DIRECTORY
 
 

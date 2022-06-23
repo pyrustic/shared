@@ -71,12 +71,11 @@ class Document:
         self._directory = directory
         self._temporary = temporary
         self._name = None
+        self._pathname = None
         self._tempdir = None
         self._new = False
         self._deleted = False
         self._closed = False
-        self._pathname = None
-        self._temporary = False
         self._cache = None
         self._exit_handler_registered = False
         self._is_json = None
