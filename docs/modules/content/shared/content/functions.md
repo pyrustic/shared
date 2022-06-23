@@ -16,7 +16,7 @@ The Shared Data Interface
 [autosave](#autosave) &nbsp;&nbsp; [create](#create) &nbsp;&nbsp; [get\_key\_value](#get_key_value) &nbsp;&nbsp; [readonly](#readonly) &nbsp;&nbsp; [write](#write)
 
 ## autosave
-No description
+Convenience function to open a document in autosave mode. It returns data
 
 
 
@@ -32,7 +32,7 @@ No description
 
 
 ## create
-No description
+Convenience function to create a document
 
 
 
@@ -75,7 +75,7 @@ The result will be: ("name": "John Doe")
 
 
 ## readonly
-No description
+Convenience function to open a document in readonly mode. It returns the data
 
 
 
@@ -91,7 +91,7 @@ No description
 
 
 ## write
-No description
+Convenience function to open a document then write data inside
 
 
 

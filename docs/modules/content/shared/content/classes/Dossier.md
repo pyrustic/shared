@@ -25,14 +25,14 @@ No class attributes.
 |Property|Type|Description|Inherited from|
 |---|---|---|---|
 |autosave|getter|Return the state of the autosave boolean||
-|cache|getter|None||
+|cache|getter|Returns the cache||
 |caching|getter|Return the state of the caching boolean||
-|closed|getter|None||
+|closed|getter|Returns the Closed boolean||
 |deleted|getter|Returns True if this dossier has been deleted through this object||
 |directory|getter|Return the directory path (the parent directory of the dossier)||
-|name|getter|None||
+|name|getter|Returns the name||
 |new|getter|Returns True if this dossier is newly created, else return False||
-|pathname|getter|None||
+|pathname|getter|Returns the pathname||
 |readonly|getter|Return the state of the readonly boolean||
 |target|getter|Return the target||
 |temporary|getter|Returns True if this Document is created in a temporary directory. The database is created in a temporary directory if you assign None to the constructor's "directory" parameter||

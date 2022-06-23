@@ -1,5 +1,6 @@
-"""Data Transfer Object"""
+"""Classes for Data Transfer Objects"""
 from collections import namedtuple
+
 
 Target = namedtuple("Target", ["name", "directory", "pathname", "tempdir"])
 

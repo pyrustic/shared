@@ -27,14 +27,14 @@ No class attributes.
 |autosave|getter|Return the autosave boolean state||
 |cache|getter|Returns the cached contents of the document. Returns None if caching is set to False.||
 |caching|getter|Returns the caching boolean||
-|closed|getter|None||
+|closed|getter|Returns the Closed boolean||
 |default|getter|Returns the default value||
 |deleted|getter|Return True if this document file is deleted else return False||
 |directory|getter|Return the value of the location variable||
-|file_format|getter|None||
-|name|getter|None||
+|file_format|getter|Returns the file format||
+|name|getter|Returns the name||
 |new|getter|Returns True if this dossier is newly created, else return False||
-|pathname|getter|None||
+|pathname|getter|Returns the pathname||
 |readonly|getter|Return the readonly boolean state||
 |target|getter|Return the target||
 |temporary|getter|Returns True if this Document is created in a temporary directory. The database is created in a temporary directory if you  assign None to the constructor's "directory" parameter||

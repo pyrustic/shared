@@ -57,18 +57,22 @@ class Dossier:
 
     @property
     def cache(self):
+        """Returns the cache"""
         return self._cache
 
     @property
     def name(self):
+        """Returns the name"""
         return self._name
 
     @property
     def pathname(self):
+        """Returns the pathname"""
         return self._pathname
 
     @property
     def closed(self):
+        """Returns the Closed boolean"""
         return self._closed
 
     @property
