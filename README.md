@@ -259,14 +259,14 @@ For individual access to [Jesth](https://github.com/pyrustic/jesth#readme) and [
 For more technical details about this class, read its [reference documentation](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/classes/Document.md#class-document).
 
 # Dossier
-The `Dossier` class stores collections (`list`, `dict`, `set`) and `binary data` with a unified interface inside a [dossier](https://dictionary.cambridge.org/dictionary/english/dossier). The `Shared` library allows to read and write a dossier not only programmatically but also from the [command line](#command-line-interface).
+The `Dossier` class stores collections (**list**, **dict**, **set**) and **binary data** with a unified interface inside a [dossier](https://dictionary.cambridge.org/dictionary/english/dossier). **Shared** allows to read and write a dossier not only programmatically but also from the [command line](#command-line-interface).
 
-This class shares a similar interface with the `Document` class. Thus, the `Dossier` class constructor has `target`, `directory`, `autosave`, `readonly` and `temporary` as parameters. These elements are already covered in the [Document](#document) class section.
+This class shares a similar interface with the `Document` class. Thus, the `Dossier` class constructor has `target`, `directory`, `autosave`, `readonly` and `temporary` as parameters. These parameters are already covered in the `Document` class [section](#document).
 
 Under the hood, `Dossier` uses [files](https://en.wikipedia.org/wiki/Computer_file) and [JSON](https://en.wikipedia.org/wiki/JSON) to store data.
 
 ## Example
-Let's create data in **script_1.py**:
+Let's create a dossier with **script_1.py**:
 
 ```python
 # script_1.py
@@ -286,7 +286,7 @@ dossier.set("colors", colors)  # set the 'colors' entry
 # Done ! The data is persisted !
 ```
 
-From **script_2.py**, let's access the data created by **script_1.py**:
+From **script_2.py**, let's access the dossier created with **script_1.py**:
 ```python
 # script_2.py
 from shared import Dossier
@@ -370,14 +370,15 @@ dossier = Dossier("my-dossier")
 # check a specific entry
 info = dossier.check("entry")
 if info:
-    # info is a 2-tuple (container, filename)
-    # the container is a string that represents the type of the entry
+    # info is a 3-tuple (name, container, filename).
+    # The name is simply the entry name.
+    # The container is a string that represents the type of the entry.
     # containers: "dict", "list", "set", and "bin"
     # The filename is either the path to a JSON file or a binary file
-    container, filename = info
+    name, container, filename = info
 
 # check the contents of the dossier
-dossier_info = dossier.check()  # returns a dict, keys are entries and values are 2-tuples
+dossier_info = dossier.check()  # returns a dict, keys are entries and values are 3-tuples
 
 for entry, info in dossier_info.items():
     print("Entry:", info.name) # the entry name
@@ -406,9 +407,10 @@ dossier.delete()  # collections, binary data, and meta data are gone
 ```
 
 ## Conclusion
-To store collections and binary data in a dossier **without worrying about how they are actually saved**, the `Document` class is the interface to use.
+To store collections and binary data in a dossier **without worrying about how they are actually saved**, the `Dossier` class is the interface to use.
 
 For more technical details about this class, read its [documentation](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/classes/Dossier.md#class-dossier).
+
 
 # Database
 Intuitive interaction with **SQLite** databases.
@@ -436,19 +438,20 @@ database = Database("my-database", init_script=INIT_SCRIPT)
 # This will only be executed once !
 # So you can safely restart this script again and again...
 if database.new:
-    # Write data to this database
+    # Populate this database
     sql = """INSERT INTO friends VALUES ("Jack", 20)"""
     database.edit(sql)
 
     # few lines of code later...
 
-    # Write data to this database
+    # Populate this database
     sql = """INSERT INTO friends VALUES (?, ?)"""
-    database.edit(sql, param=("Jane", 21))
+    parameters = ("Jane", 21)
+    database.edit(sql, param=parameters)
 
 # Read data
 sql = "SELECT * FROM friends"
-columns, data = database.query(sql)
+columns, data = database.query(sql)  # returns a shared.dto.QueryResult namedtuple
 
 print(columns)
 # output: ['name', 'age']
@@ -462,9 +465,9 @@ For more technical details about this class, read its [documentation](https://gi
 
 
 # Command line interface
-**Shared** comes with an intuitive command line interface for **Dossier** class. Type `help` in the command line interface to display a short manual.
+**Shared** comes with an intuitive command line interface for the `Dossier` class. Type `help` in the command line interface to display a short manual.
 
-For the next subsections, suppose we have a non-empty dossier named `my-dossier` located in `/home/alex/dossiers`. 
+For the following subsections, assume we have a pre-populated dossier named `my-dossier` and located in `/home/alex/dossiers`.
 
 ## Check the content
 Check the contents of `my-dossier` or a specific entry:
@@ -509,7 +512,7 @@ shared get colors
 }
 
 ```
-The output text is the exact JSON representation as stored in a file. So the **output can be consumed as is** by another program and deserialized with a JSON library. Note that the `colors` entry is a `set` but represented as a `dict` in JSON.
+The output text is the exact **JSON** representation as stored in a file. So the **output can be consumed as is** by another program and deserialized with a **JSON** library. Note that the `colors` entry is a `set` but represented as a `dict` in **JSON**.
 
 ## Store binary data
 ```bash
@@ -543,7 +546,7 @@ This entry doesn't exist.
 ```
 
 ## Delete a dossier
-Right-click on the folder with your mouse, then send it safely to the trash ;)
+Right-click on the folder with your mouse, then send it safely to the trash... ;)
 
 
 # Installation

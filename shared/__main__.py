@@ -78,6 +78,10 @@ The current working directory is considered the dossier.
     Delete multiple entries
     =======================
     del <entry-name> <entry-name> ...
+    
+    
+Read more online:
+https://github.com/pyrustic/shared
 """
 
 DIRECTORY_MUST_BE_EMPTY_NOTE = "Directory must be empty before initialization."
