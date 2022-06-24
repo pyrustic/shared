@@ -48,7 +48,7 @@ Among the three classes, `Dossier` is the class of which a single instance can h
 
 `Document` and `Dossier` provide **Autosave** functionality, while `Database` automatically closes the underlying database connection when the user closes the application.
 
-All three classes provide **read-only** access to data and also allow the creation of **temporary data** which is automatically deleted when the user closes the application.
+All three classes provide an optional **read-only** access to data and also allow the creation of **temporary data** which is automatically deleted when the user closes the application.
 
 Let's explore the [Document](#document), [Dossier](#dossier), and [Database](#database) classes in the next sections !
 
@@ -73,14 +73,13 @@ The string `my-data.json` is the base name of a file that will be created if it 
 By default, the underlying document will be considered as a JSON file if its extension is `.json`, otherwise it will be considered as a [Jesth](https://github.com/pyrustic/jesth#readme) file. The default behaviour can be changed by setting the `file_format` parameter which accepts the strings `json` or `jesth`.
 
 ## Initialization
-A `document` can be initialized with a conditional statement or by defining default data. By default, the `Document` class will assign a `dict` to the null parameter `default_data`.
+A document can be initialized with a conditional statement or by defining default data. By default, the `Document` class will assign a `dict` to the null parameter `default_data`.
 
 ### Use a conditional statement
 It's as simple as testing a boolean to check if the underlying document file is newly created or not:
 
 ```python
 from shared import Document
-
 
 # access 'my-data.json'
 document = Document("my-data.json")
@@ -92,7 +91,7 @@ if document.new:
 ```
 
 ### Set default data
-The most elegant, least detailed and recommended way to initialize a document is to set some default data:
+The most elegant, less verbose and recommended way to initialize a document is to set some default data to the `default` parameter:
 
 ```python
 from shared import Document
@@ -111,7 +110,7 @@ document = Document("my-data.json", default=DEFAULT_DATA)
 ## Data location
 The only mandatory argument to be supplied to the `Document` class constructor is the `target`. For convenience, the `target` is either the absolute path or the base name of a file. Its data type is either a string or an instance of [pathlib.Path](https://docs.python.org/3/library/pathlib.html).
 
-The optional `directory` parameter exists to supplement the `target` value, assuming that value is not an absolute path.
+The optional `directory` parameter exists to supplement the `target` value when that value is not an absolute path.
 
 ### Default directory
 By default, document files are saved in `$HOME/PyrusticHome/shared`. You can change the location according to your needs:
@@ -149,11 +148,10 @@ document = Document(pathname)
 ```
 
 ### Temporary data
-Setting a boolean can enable temporary mode, so a document can only be created and used while the application is running, and then safely deleted when the application closes:
+Setting the `temporary` boolean can enable temporary mode, so a document can only be created and used while the application is running, and then safely deleted when the application closes:
 
 ```python
 from shared import Document
-
 
 # access 'my-data.json'
 document = Document("my-data.json", temporary=True)
@@ -172,7 +170,6 @@ Thanks to [atexit](https://docs.python.org/3/library/atexit.html) module, `Docum
 ```python
 import sys
 from shared import Document
-
 
 # access 'my-config.json' with `autosave` mode enabled
 document = Document("my-config.json", autosave=True, default=[])
@@ -205,11 +202,10 @@ if data is document.cache:
 ```
 
 ## Readonly
-Setting the `readonly` parameter to `True` prevents the current application from accidentally modifying the content of a document:
+Setting the `readonly` parameter to `True` prevents the running application from accidentally modifying the content of a document:
 
 ```python
 from shared import Document
-
 
 # access 'my-data.json'
 document = Document("my-data.json", readonly=True)
@@ -224,7 +220,6 @@ You can delete the underlying file of a document (assuming the file isn't in rea
 
 ```python
 from shared import Document
-
 
 # access 'my-data.json'
 document = Document("my-data.json")
@@ -243,18 +238,18 @@ Four convenience functions are available for the `Document` class:
 from shared import create, readonly, write, autosave
 
 # quickly create a document
-create("my-data.json")
+DEFAULT = ["red", "violet"]
+create("my-data.json", default=DEFAULT)
 
 # quickly open a document in readonly mode
-data = readonly("my-data.json", )
+data = readonly("my-data.json")
 
-# quicky change the content of a document
-data = ["moon", "sun"]
+# quickly change the content of a document
+data = ["red", "green"]
 write("my-data.json", data)
 
 # quickly read the content of a document in autosave mode
-default = ["red", "green"]
-data = autosave("my-data.json", default=default)
+data = autosave("my-data.json")
 data.append("blue")  # data will be automatically saved on exit
 ```
 
