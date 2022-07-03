@@ -18,7 +18,7 @@
 This project is part of the [Pyrustic Open Ecosystem](https://pyrustic.github.io).
 > [Installation](#installation) . [Latest](https://github.com/pyrustic/shared/tags) . [Modules Documentation](https://github.com/pyrustic/shared/tree/master/docs/modules#readme)
 
-In June 2022, **Shared** [entered](https://zenodo.org/record/6786416) the [top 5000 most downloaded](https://hugovk.github.io/top-pypi-packages/) Python packages on [PyPI](https://pypi.org) over 30 days for the **first time**.
+In June 2022, **Shared** [entered](https://zenodo.org/record/6786416) the [top 5000](https://hugovk.github.io/top-pypi-packages/) **most downloaded** Python packages on [PyPI](https://pypi.org) over 30 days for the **first time**.
 
 ## Table of contents
 - [Overview](#overview) 
