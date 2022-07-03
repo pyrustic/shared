@@ -64,7 +64,6 @@ class Document:
         By default, the directory is "$HOME/PyrusticHome/shared". If you set None to directory,
         the document will be created in a temporary directory
         - temporary: boolean to tell if either you want this document to be temporary or not
-        - error_module: module containing these Exceptions classes: AlreadyClosedError, , AlreadyDeletedError, and ReadonlyError
         """
         self._target = target
         self._readonly = readonly
@@ -197,6 +196,8 @@ class Document:
             raise error.AlreadyDeletedError
         if self._closed:
             raise error.AlreadyClosedError
+        if not os.path.isfile(self._pathname):
+            return self._cache
         data = self._read()
         if self._caching:
             self._cache = data
@@ -276,8 +277,9 @@ class Document:
         self._pathname = os.path.join(self._directory,
                                       self._name)
         if not os.path.isfile(self._pathname):
-            self._write(self._default)
-            self._new = True
+            if not self._readonly:
+                self._write(self._default)
+                self._new = True
             if self._caching:
                 self._cache = self._default
 
