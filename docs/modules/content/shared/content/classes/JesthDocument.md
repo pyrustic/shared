@@ -12,11 +12,11 @@ The Shared Data Interface
 >
 > **Constants:** &nbsp; DEFAULT_DIRECTORY
 
-# Class Document
+# Class JesthDocument
 No description.
 
 ## Base Classes
-object
+shared.document.Document
 
 ## Class Attributes
 No class attributes.
@@ -24,19 +24,19 @@ No class attributes.
 ## Class Properties
 |Property|Type|Description|Inherited from|
 |---|---|---|---|
-|autosave|getter|Return the autosave boolean state||
-|cache|getter|Returns the cached contents of the document. Returns None if caching is set to False.||
-|caching|getter|Returns the caching boolean||
-|closed|getter|Returns the Closed boolean||
-|default|getter|Returns the default value||
-|deleted|getter|Return True if this document file is deleted else return False||
-|directory|getter|Return the value of the location variable||
-|name|getter|Returns the name||
-|new|getter|Returns True if this dossier is newly created, else return False||
-|pathname|getter|Returns the pathname||
-|readonly|getter|Return the readonly boolean state||
-|target|getter|Return the target||
-|temporary|getter|Returns True if this Document is created in a temporary directory. The database is created in a temporary directory if you  assign None to the constructor's "directory" parameter||
+|autosave|getter|Return the autosave boolean state|shared.document.Document|
+|cache|getter|Returns the cached contents of the document. Returns None if caching is set to False.|shared.document.Document|
+|caching|getter|Returns the caching boolean|shared.document.Document|
+|closed|getter|Returns the Closed boolean|shared.document.Document|
+|default|getter|Returns the default value|shared.document.Document|
+|deleted|getter|Return True if this document file is deleted else return False|shared.document.Document|
+|directory|getter|Return the value of the location variable|shared.document.Document|
+|name|getter|Returns the name|shared.document.Document|
+|new|getter|Returns True if this dossier is newly created, else return False|shared.document.Document|
+|pathname|getter|Returns the pathname|shared.document.Document|
+|readonly|getter|Return the readonly boolean state|shared.document.Document|
+|target|getter|Return the target|shared.document.Document|
+|temporary|getter|Returns True if this Document is created in a temporary directory. The database is created in a temporary directory if you  assign None to the constructor's "directory" parameter|shared.document.Document|
 
 
 
@@ -49,7 +49,7 @@ Init.
 
 
 
-**Signature:** (self, target, \*, default=None, autosave=False, readonly=False, caching=True, directory='/home/alex/PyrusticHome/shared', temporary=False)
+**Signature:** (self, target, \*, default=None, autosave=False, readonly=False, caching=True, directory='/home/alex/PyrusticHome/shared', temporary=False, compact=False, split\_body=True)
 
 |Parameter|Description|
 |---|---|
@@ -73,7 +73,7 @@ Init.
 ## close
 This method closes the access to the document.
 
-
+**Inherited from:** shared.document.Document
 
 **Signature:** (self)
 
@@ -90,7 +90,7 @@ This method closes the access to the document.
 This method deletes the document.
 Returns a boolean or raise ReadonlyError
 
-
+**Inherited from:** shared.document.Document
 
 **Signature:** (self)
 
@@ -106,7 +106,7 @@ Returns a boolean or raise ReadonlyError
 ## read
 Load data from the document
 
-
+**Inherited from:** shared.document.Document
 
 **Signature:** (self)
 
@@ -122,7 +122,7 @@ Load data from the document
 ## write
 Set the contents of the JSON file. Returns the same data
 
-
+**Inherited from:** shared.document.Document
 
 **Signature:** (self, data)
 
@@ -138,7 +138,7 @@ Set the contents of the JSON file. Returns the same data
 ## \_exit\_handler
 No description
 
-
+**Inherited from:** shared.document.Document
 
 **Signature:** (self)
 
@@ -154,7 +154,7 @@ No description
 ## \_init\_file
 No description
 
-
+**Inherited from:** shared.document.Document
 
 **Signature:** (self)
 
@@ -170,7 +170,7 @@ No description
 ## \_make\_directory
 No description
 
-
+**Inherited from:** shared.document.Document
 
 **Signature:** (self)
 
@@ -202,7 +202,7 @@ No description
 ## \_register\_exit\_handler
 No description
 
-
+**Inherited from:** shared.document.Document
 
 **Signature:** (self)
 
@@ -218,7 +218,7 @@ No description
 ## \_save\_cache
 No description
 
-
+**Inherited from:** shared.document.Document
 
 **Signature:** (self)
 
@@ -234,7 +234,7 @@ No description
 ## \_setup
 No description
 
-
+**Inherited from:** shared.document.Document
 
 **Signature:** (self)
 
@@ -250,7 +250,7 @@ No description
 ## \_unregister\_exit\_handler
 No description
 
-
+**Inherited from:** shared.document.Document
 
 **Signature:** (self)
 
@@ -266,7 +266,7 @@ No description
 ## \_update\_variables
 No description
 
-
+**Inherited from:** shared.document.Document
 
 **Signature:** (self)
 

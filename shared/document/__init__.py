@@ -1,53 +1,15 @@
 import os
 import os.path
 import atexit
-import jesth
-from tempfile import TemporaryDirectory
 from shared import error
 from shared import util
 from shared.constant import DEFAULT_DIRECTORY
 
 
-def create(target, *, default=None, file_format=None, directory=DEFAULT_DIRECTORY):
-    """Convenience function to create a document"""
-    document = Document(target, default=default, autosave=False,
-                        readonly=False, caching=False, file_format=file_format,
-                        directory=directory, temporary=False)
-    document.close()
-
-
-def readonly(target, *, default=None, file_format=None, directory=DEFAULT_DIRECTORY):
-    """Convenience function to open a document in readonly mode. It returns the data"""
-    document = Document(target, default=default, autosave=False,
-                        readonly=False, caching=False, file_format=file_format,
-                        directory=directory, temporary=False)
-    data = document.read()
-    document.close()
-    return data
-
-
-def write(target, data, *, file_format=None, directory=DEFAULT_DIRECTORY):
-    """Convenience function to open a document then write data inside"""
-    document = Document(target, default=None, autosave=False,
-                        readonly=False, caching=False, file_format=file_format,
-                        directory=directory, temporary=False)
-    document.write(data)
-    document.close()
-
-
-def autosave(target, *, default=None, file_format=None, directory=DEFAULT_DIRECTORY):
-    """Convenience function to open a document in autosave mode. It returns data"""
-    document = Document(target, default=default, autosave=True,
-                        readonly=False, caching=True, file_format=file_format,
-                        directory=directory, temporary=False)
-    return document.read()
-
-
 class Document:
     def __init__(self, target, *, default=None,
                  autosave=False, readonly=False,
-                 caching=True, file_format=None,
-                 directory=DEFAULT_DIRECTORY,
+                 caching=True, directory=DEFAULT_DIRECTORY,
                  temporary=False):
         """
         Init.
@@ -70,7 +32,6 @@ class Document:
         self._autosave = autosave
         self._default = dict() if default is None else default
         self._caching = caching
-        self._file_format = file_format
         self._directory = directory
         self._temporary = temporary
         self._name = None
@@ -81,7 +42,6 @@ class Document:
         self._closed = False
         self._cache = None
         self._exit_handler_registered = False
-        self._is_json = None
         self._setup()
 
     @property
@@ -151,11 +111,6 @@ class Document:
     def caching(self):
         """Returns the caching boolean"""
         return self._caching
-
-    @property
-    def file_format(self):
-        """Returns the file format"""
-        return self._file_format
 
     @property
     def directory(self):
@@ -241,7 +196,6 @@ class Document:
 
     def _setup(self):
         self._update_variables()
-        self._check_file_format()
         self._make_directory()
         self._init_file()
         if self._autosave:
@@ -251,19 +205,6 @@ class Document:
     def _update_variables(self):
         info = util.check_target(self._target, self._directory, self._temporary)
         self._name, self._directory, self._pathname, self._tempdir = info
-
-    def _check_file_format(self):
-        self._is_json = False
-        if self._file_format is None:
-            _, ext = os.path.splitext(self._pathname)
-            self._is_json = True if ext.lower() == ".json" else False
-        elif self._file_format.lower() == "json":
-            self._is_json = True
-        elif self._file_format.lower() == "jesth":
-            self._is_json = False
-        else:
-            msg = "Unknown file format {} !".format(self._file_format)
-            raise error.Error(msg)
 
     def _make_directory(self):
         if self._temporary:
@@ -309,12 +250,7 @@ class Document:
             self._save_cache()
 
     def _read(self):
-        if self._is_json:
-            return util.json_load(self._pathname)
-        return jesth.read(self._pathname, compact=False,
-                          split_body=True)
+        pass
 
     def _write(self, data):
-        if self._is_json:
-            return util.json_dump(self._pathname, data, pretty=True)
-        return jesth.write(data, self._pathname)
+        pass

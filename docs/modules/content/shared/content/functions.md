@@ -6,46 +6,14 @@ Back to [All Modules](https://github.com/pyrustic/shared/blob/master/docs/module
  
 The Shared Data Interface
 
-> **Classes:** &nbsp; [Database](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/classes/Database.md#class-database) &nbsp;&nbsp; [Document](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/classes/Document.md#class-document) &nbsp;&nbsp; [Dossier](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/classes/Dossier.md#class-dossier)
+> **Classes:** &nbsp; [Database](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/classes/Database.md#class-database) &nbsp;&nbsp; [Document](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/classes/Document.md#class-document) &nbsp;&nbsp; [Dossier](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/classes/Dossier.md#class-dossier) &nbsp;&nbsp; [JesthDocument](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/classes/JesthDocument.md#class-jesthdocument) &nbsp;&nbsp; [JsonDocument](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/classes/JsonDocument.md#class-jsondocument)
 >
-> **Functions:** &nbsp; [autosave](#autosave) &nbsp;&nbsp; [create](#create) &nbsp;&nbsp; [get\_key\_value](#get_key_value) &nbsp;&nbsp; [readonly](#readonly) &nbsp;&nbsp; [write](#write)
+> **Functions:** &nbsp; [get\_key\_value](#get_key_value) &nbsp;&nbsp; [jesth\_autosave](#jesth_autosave) &nbsp;&nbsp; [jesth\_create](#jesth_create) &nbsp;&nbsp; [jesth\_readonly](#jesth_readonly) &nbsp;&nbsp; [jesth\_write](#jesth_write) &nbsp;&nbsp; [json\_autosave](#json_autosave) &nbsp;&nbsp; [json\_create](#json_create) &nbsp;&nbsp; [json\_readonly](#json_readonly) &nbsp;&nbsp; [json\_write](#json_write)
 >
 > **Constants:** &nbsp; DEFAULT_DIRECTORY
 
 # All Functions
-[autosave](#autosave) &nbsp;&nbsp; [create](#create) &nbsp;&nbsp; [get\_key\_value](#get_key_value) &nbsp;&nbsp; [readonly](#readonly) &nbsp;&nbsp; [write](#write)
-
-## autosave
-Convenience function to open a document in autosave mode. It returns data
-
-
-
-**Signature:** (target, \*, default=None, file\_format=None, directory='/home/alex/PyrusticHome/shared')
-
-
-
-
-
-**Return Value:** None
-
-[Back to Top](#module-overview)
-
-
-## create
-Convenience function to create a document
-
-
-
-**Signature:** (target, \*, default=None, file\_format=None, directory='/home/alex/PyrusticHome/shared')
-
-
-
-
-
-**Return Value:** None
-
-[Back to Top](#module-overview)
-
+[get\_key\_value](#get_key_value) &nbsp;&nbsp; [jesth\_autosave](#jesth_autosave) &nbsp;&nbsp; [jesth\_create](#jesth_create) &nbsp;&nbsp; [jesth\_readonly](#jesth_readonly) &nbsp;&nbsp; [jesth\_write](#jesth_write) &nbsp;&nbsp; [json\_autosave](#json_autosave) &nbsp;&nbsp; [json\_create](#json_create) &nbsp;&nbsp; [json\_readonly](#json_readonly) &nbsp;&nbsp; [json\_write](#json_write)
 
 ## get\_key\_value
 Split a string into key and value parts.
@@ -74,12 +42,12 @@ The result will be: ("name": "John Doe")
 [Back to Top](#module-overview)
 
 
-## readonly
-Convenience function to open a document in readonly mode. It returns the data
+## jesth\_autosave
+Convenience function to open a document in autosave mode. It returns data
 
 
 
-**Signature:** (target, \*, default=None, file\_format=None, directory='/home/alex/PyrusticHome/shared')
+**Signature:** (target, \*, default=None, directory='/home/alex/PyrusticHome/shared', compact=False, split\_body=True)
 
 
 
@@ -90,12 +58,108 @@ Convenience function to open a document in readonly mode. It returns the data
 [Back to Top](#module-overview)
 
 
-## write
+## jesth\_create
+Convenience function to create a document
+
+
+
+**Signature:** (target, \*, default=None, directory='/home/alex/PyrusticHome/shared')
+
+
+
+
+
+**Return Value:** None
+
+[Back to Top](#module-overview)
+
+
+## jesth\_readonly
+Convenience function to open a document in readonly mode. It returns the data
+
+
+
+**Signature:** (target, \*, default=None, directory='/home/alex/PyrusticHome/shared', compact=False, split\_body=True)
+
+
+
+
+
+**Return Value:** None
+
+[Back to Top](#module-overview)
+
+
+## jesth\_write
 Convenience function to open a document then write data inside
 
 
 
-**Signature:** (target, data, \*, file\_format=None, directory='/home/alex/PyrusticHome/shared')
+**Signature:** (target, data, \*, directory='/home/alex/PyrusticHome/shared')
+
+
+
+
+
+**Return Value:** None
+
+[Back to Top](#module-overview)
+
+
+## json\_autosave
+Convenience function to open a document in autosave mode. It returns data
+
+
+
+**Signature:** (target, \*, default=None, directory='/home/alex/PyrusticHome/shared')
+
+
+
+
+
+**Return Value:** None
+
+[Back to Top](#module-overview)
+
+
+## json\_create
+Convenience function to create a document
+
+
+
+**Signature:** (target, \*, default=None, directory='/home/alex/PyrusticHome/shared')
+
+
+
+
+
+**Return Value:** None
+
+[Back to Top](#module-overview)
+
+
+## json\_readonly
+Convenience function to open a document in readonly mode. It returns the data
+
+
+
+**Signature:** (target, \*, default=None, directory='/home/alex/PyrusticHome/shared')
+
+
+
+
+
+**Return Value:** None
+
+[Back to Top](#module-overview)
+
+
+## json\_write
+Convenience function to open a document then write data inside
+
+
+
+**Signature:** (target, data, \*, directory='/home/alex/PyrusticHome/shared')
 
 
 
