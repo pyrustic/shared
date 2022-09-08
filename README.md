@@ -75,8 +75,7 @@ Since **JSON** is very popular, we will focus on the `JsonDocument` class in the
 Accessing a document or creating a new one is as simple as this:
 
 ```python
-# from shared.document.jesth import JesthDocument
-from shared.document.json import JsonDocument
+from shared import JsonDocument
 
 
 # Create a new document instance which will be linked to the 'my-data.json' file.
@@ -98,7 +97,7 @@ A document can be initialized with a conditional statement or by defining defaul
 It's as simple as testing a boolean to check if the underlying document file is newly created or not:
 
 ```python
-from shared.document.json import JsonDocument
+from shared import JsonDocument
 
 # access 'my-data.json'
 document = JsonDocument("my-data.json")
@@ -113,7 +112,7 @@ if document.new:
 The most elegant, less verbose and recommended way to initialize a document is to set some default data to the `default` parameter:
 
 ```python
-from shared.document.json import JsonDocument
+from shared import JsonDocument
 
 # default data to init the file 'my-data.json'
 DEFAULT_DATA = {"name": "alex", "job": "evangelist"}
@@ -135,7 +134,7 @@ The optional `directory` parameter exists to supplement the `target` value when 
 By default, document files are saved in `$HOME/PyrusticHome/shared`. You can change the location according to your needs:
 
 ```python
-from shared.document.json import JsonDocument
+from shared import JsonDocument
 
 DIRECTORY = "/home/alex/private"
 
@@ -153,7 +152,7 @@ document = JsonDocument("my-data.json", directory=DIRECTORY)
 You can set an absolute path as the target. In this case, the `Document` class ignores the `directory` parameter.
 
 ```python
-from shared.document.json import JsonDocument
+from shared import JsonDocument
 
 pathname = "/home/alex/private/my-data.json"
 
@@ -170,7 +169,7 @@ document = JsonDocument(pathname)
 Setting the `temporary` boolean can enable temporary mode, so a document can only be created and used while the application is running, and then safely deleted when the application closes:
 
 ```python
-from shared.document.json import JsonDocument
+from shared import JsonDocument
 
 # access 'my-data.json'
 document = JsonDocument("my-data.json", temporary=True)
@@ -188,7 +187,7 @@ Thanks to [atexit](https://docs.python.org/3/library/atexit.html) module, `Docum
 
 ```python
 import sys
-from shared.document.json import JsonDocument
+from shared import JsonDocument
 
 # access 'my-config.json' with `autosave` mode enabled
 document = JsonDocument("my-config.json", autosave=True, default=[])
@@ -207,7 +206,7 @@ Along with `atexit` module, the `Document` class also uses a caching mechanism t
 By default, `caching` mode is enabled, so the user can access cached data through the `cache` property of an instance of the `Document` class:
 
 ```python
-from shared.document.json import JsonDocument
+from shared import JsonDocument
 
 DEFAULT_DATA = {"name": "alex", "job": "evangelist"}
 
@@ -224,7 +223,7 @@ if data is document.cache:
 Setting the `readonly` parameter to `True` prevents the running application from accidentally modifying the content of a document:
 
 ```python
-from shared.document.json import JsonDocument
+from shared import JsonDocument
 
 # access 'my-data.json'
 document = JsonDocument("my-data.json", readonly=True)
@@ -238,7 +237,7 @@ document = JsonDocument("my-data.json", readonly=True)
 You can delete the underlying file of a document (assuming the file isn't in readonly mode):
 
 ```python
-from shared.document.json import JsonDocument
+from shared import JsonDocument
 
 # access 'my-data.json'
 document = JsonDocument("my-data.json")
@@ -254,7 +253,7 @@ if document.deleted:
 Four convenience functions are available for the `JsonDocument` class (also for the `JesthDocument` class):
 
 ```python
-from shared.document.json import json_create, json_readonly, json_write, json_autosave
+from shared import json_create, json_readonly, json_write, json_autosave
 
 # quickly create a document
 DEFAULT = ["red", "violet"]
@@ -272,7 +271,7 @@ data = json_autosave("my-data.json")
 data.append("blue")  # data will be automatically saved on exit
 ```
 
-## Conclusion
+## Recapitulation
 For individual access to [Jesth](https://github.com/pyrustic/jesth#readme) and [JSON](https://en.wikipedia.org/wiki/JSON) files that are likely to be **manually edited by a human**, the `Document` class is the recommended interface.
 
 For more technical details about this class and the subclasses `JesthDocument` and `JsonDocument`, read the [reference documentation](https://github.com/pyrustic/shared/tree/master/docs/modules#readme).
@@ -425,7 +424,7 @@ dossier.delete("entry_2", "entry_3")
 dossier.delete()  # collections, binary data, and meta data are gone
 ```
 
-## Conclusion
+## Recapitulation
 To store collections and binary data in a dossier **without worrying about how they are actually saved**, the `Dossier` class is the interface to use.
 
 For more technical details about this class, read its [documentation](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/classes/Dossier.md#class-dossier).
@@ -535,22 +534,22 @@ The output text is the exact **JSON** representation as stored in a file. So the
 
 ## Store binary data
 ```bash
-$ shared set selfie bin: "/home/alex/selfie.png"
+$ shared set selfie bin: '/home/alex/selfie.png'
 Entry successfully updated !
 ```
 
 You can copy a binary entry into an arbitrary file from the command line:
 
 ```bash
-$ shared get selfie > "/home/alex/selfie-copy.png"
+$ shared get selfie > '/home/alex/selfie-copy.png'
 ```
 
 ## Store a collection
 ```bash
-$ shared set countries list: "/home/alex/countries.json"
+$ shared set countries list: '/home/alex/countries.json'
 Entry successfully updated !
 
-$ shared set my_config dict: "/home/alex/app_config.json"
+$ shared set my_config dict: '/home/alex/app_config.json'
 Entry successfully updated !
 ```
 
