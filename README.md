@@ -12,13 +12,11 @@
 
 
 
-# Rustic Data Sharing
+# Pyrustic Shared
 **Data exchange and persistence**
 
 This project is part of the [Pyrustic Open Ecosystem](https://pyrustic.github.io).
-> [Installation](#installation) . [Latest](https://github.com/pyrustic/shared/tags) . [Modules Documentation](https://github.com/pyrustic/shared/tree/master/docs/modules#readme)
-
-In June 2022, **Shared** [entered](https://zenodo.org/record/6786416) the [top 5000](https://hugovk.github.io/top-pypi-packages/) **most downloaded** Python packages on [PyPI](https://pypi.org) over 30 days for the **first time**.
+> [Installation](#installation) . [Latest](https://github.com/pyrustic/shared/tags) . [Modules](https://github.com/pyrustic/shared/tree/master/docs/modules#readme)
 
 ## Table of contents
 - [Overview](#overview) 
@@ -26,14 +24,17 @@ In June 2022, **Shared** [entered](https://zenodo.org/record/6786416) the [top 5
 - [Dossier](#dossier)
 - [Database](#database)
 - [Command line interface](#command-line-interface)
+- [Miscellaneous](#miscellaneous)
 - [Installation](#installation) 
 
 # Overview
-**Shared** is a Python package created to be the [hacker](https://en.wikipedia.org/wiki/Hacker_culture)'s companion when it comes to storing application data, managing configuration files, caching data, and exchanging data with other programs. This library is the reference implementation of the [Rustic Data Sharing Interface](https://github.com/pyrustic/shared/blob/master/rustic.md).
+**Shared** is a Python package created to be the programmer's companion when it comes to storing application data, managing configuration files, caching data, and exchanging data with other programs.
 
 Although a lightweight package, **Shared** smoothly handles collections (**dict**, **list**, **set**), **binary** data, and **SQL** queries.
 
-**Shared**'s intuitive application programming interface is designed as a triptych. Thus, three classes with similar interfaces are created to cover the needs of data exchange and persistence: `Document`, `Dossier`, and `Database`.
+## Designed as a triptych
+
+**Shared**'s intuitive application programming interface is designed as a  [triptych](https://en.wikipedia.org/wiki/Triptych). Thus, three classes with similar interfaces are created to cover the needs of data exchange and persistence: `Document`, `Dossier`, and `Database`.
 
 |Class|Relevance|
 |---|---|
@@ -41,30 +42,46 @@ Although a lightweight package, **Shared** smoothly handles collections (**dict*
 |`Dossier`|To store collections and binary data in a dossier **without worrying about how they are actually saved**.|
 |`Database`|For an intuitive interaction with [SQLite](https://www.sqlite.org) **databases**.|
 
+> **Note:** The `Document` class is not intended to be used directly. Instead, depending on the requirement, one will use the `JsonDocument` or `JesthDocument` class which subclasses the `Document` class.
 
+## Some characteristics
+Since all three classes share similar interfaces, some handy functionality has been replicated in all of them with a few exceptions.
+
+### Initialization
 All three classes emphasize **initialization**:
 - `Document` and `Dossier` give the possibility to define **default data**.
 - `Database` allows the definition of an **initialization SQL script** which is only executed to create a new database.
 
-Among the three classes, `Dossier` is the class of which a single instance can handle multiple underlying files. The `Dossier` class has its own protocol for organizing data. For this reason, `Dossier` offers a simple yet powerful **command-line interface** that allows other programs or a human to read and write the contents of a dossier.
+### Data access
+All three classes provide an optional **read-only** access to data and also allow the creation of **temporary data** which is automatically deleted when the user closes the application.
 
 `Document` and `Dossier` provide **Autosave** functionality, while `Database` automatically closes the underlying database connection when the user closes the application.
 
-All three classes provide an optional **read-only** access to data and also allow the creation of **temporary data** which is automatically deleted when the user closes the application.
+### Command-line interface
+
+Among the three classes, `Dossier` is the class of which a single instance can handle multiple underlying files. The `Dossier` class has its own protocol for organizing data. For this reason, `Dossier` offers a simple yet powerful **command-line interface** that allows other programs or a human to read and write the contents of a dossier.
+
+<br>
 
 Let's explore the [Document](#document), [Dossier](#dossier), and [Database](#database) classes in the next sections !
 
 # Document
+The `Document` class represents an interface for reading and writing an underlying file whose format is either [Jesth](https://github.com/pyrustic/jesth#readme) or [JSON](https://en.wikipedia.org/wiki/JSON).
 
-The `Document` class represents an interface for reading and writing an underlying file whose format is either [Jesth](https://github.com/pyrustic/jesth#readme) or [JSON](https://en.wikipedia.org/wiki/JSON). Accessing a document or creating a new one is as simple as this:
+As stated previously in the [Overview](#overview) section, the `Document` class is not intended to be used directly. Instead, depending on the requirement, one will use the `JsonDocument` or `JesthDocument` class which subclasses the `Document` class. 
+
+Since **JSON** is very popular, we will focus on the `JsonDocument` class in the following examples.
+
+Accessing a document or creating a new one is as simple as this:
 
 ```python
-from shared import Document
+# from shared.document.jesth import JesthDocument
+from shared.document.json import JsonDocument
 
 
 # Create a new document instance which will be linked to the 'my-data.json' file.
 # If this file doesn't exist yet, it will be automatically created
-document = Document("my-data.json")
+document = JsonDocument("my-data.json")
 
 # From now, we can use 'document' to read and write the contents of 'my-data.json' !
 # ...
@@ -72,7 +89,7 @@ document = Document("my-data.json")
 
 The string `my-data.json` is the base name of a file that will be created if it does not yet exist. This string is called **Target** and can be an absolute path or an instance of [pathlib.Path](https://docs.python.org/3/library/pathlib.html). The `Document` class exposes the `read` and `write` methods, respectively, to read and write the underlying document.
 
-By default, the underlying document will be considered as a JSON file if its extension is `.json`, otherwise it will be considered as a [Jesth](https://github.com/pyrustic/jesth#readme) file. The default behaviour can be changed by setting the `file_format` parameter which accepts the strings `json` or `jesth`.
+
 
 ## Initialization
 A document can be initialized with a conditional statement or by defining default data. By default, the `Document` class will assign a `dict` to the null parameter `default_data`.
@@ -81,10 +98,10 @@ A document can be initialized with a conditional statement or by defining defaul
 It's as simple as testing a boolean to check if the underlying document file is newly created or not:
 
 ```python
-from shared import Document
+from shared.document.json import JsonDocument
 
 # access 'my-data.json'
-document = Document("my-data.json")
+document = JsonDocument("my-data.json")
 
 # let's initialize the content of 'my-data.json'
 if document.new:
@@ -96,13 +113,13 @@ if document.new:
 The most elegant, less verbose and recommended way to initialize a document is to set some default data to the `default` parameter:
 
 ```python
-from shared import Document
+from shared.document.json import JsonDocument
 
 # default data to init the file 'my-data.json'
 DEFAULT_DATA = {"name": "alex", "job": "evangelist"}
 
 # access 'my-data.json'
-document = Document("my-data.json", default=DEFAULT_DATA)
+document = JsonDocument("my-data.json", default=DEFAULT_DATA)
 
 # From now, thanks to the initialization functionality, the underlying
 # document contains the default data, assuming that 'my-data.json'
@@ -118,12 +135,12 @@ The optional `directory` parameter exists to supplement the `target` value when 
 By default, document files are saved in `$HOME/PyrusticHome/shared`. You can change the location according to your needs:
 
 ```python
-from shared import Document
+from shared.document.json import JsonDocument
 
 DIRECTORY = "/home/alex/private"
 
 # access 'my-data.json'
-document = Document("my-data.json", directory=DIRECTORY)
+document = JsonDocument("my-data.json", directory=DIRECTORY)
 
 # From now, you can access these properties:
 #   document.name == "my-data.json"
@@ -136,12 +153,12 @@ document = Document("my-data.json", directory=DIRECTORY)
 You can set an absolute path as the target. In this case, the `Document` class ignores the `directory` parameter.
 
 ```python
-from shared import Document
+from shared.document.json import JsonDocument
 
 pathname = "/home/alex/private/my-data.json"
 
 # access 'my-data.json'
-document = Document(pathname)
+document = JsonDocument(pathname)
 
 # From now, you can access these properties:
 #   document.name == "my-data.json"
@@ -153,10 +170,10 @@ document = Document(pathname)
 Setting the `temporary` boolean can enable temporary mode, so a document can only be created and used while the application is running, and then safely deleted when the application closes:
 
 ```python
-from shared import Document
+from shared.document.json import JsonDocument
 
 # access 'my-data.json'
-document = Document("my-data.json", temporary=True)
+document = JsonDocument("my-data.json", temporary=True)
 
 # This document will be created in a temporary directory
 # then it will be safely deleted when the application closes
@@ -171,10 +188,10 @@ Thanks to [atexit](https://docs.python.org/3/library/atexit.html) module, `Docum
 
 ```python
 import sys
-from shared import Document
+from shared.document.json import JsonDocument
 
 # access 'my-config.json' with `autosave` mode enabled
-document = Document("my-config.json", autosave=True, default=[])
+document = JsonDocument("my-config.json", autosave=True, default=[])
 # load the data
 data = document.read()
 
@@ -190,12 +207,12 @@ Along with `atexit` module, the `Document` class also uses a caching mechanism t
 By default, `caching` mode is enabled, so the user can access cached data through the `cache` property of an instance of the `Document` class:
 
 ```python
-from shared import Document
+from shared.document.json import JsonDocument
 
 DEFAULT_DATA = {"name": "alex", "job": "evangelist"}
 
 # access 'my-config.json'
-document = Document("my-config.json", caching=True, default=DEFAULT_DATA)
+document = JsonDocument("my-config.json", caching=True, default=DEFAULT_DATA)
 
 data = document.read()
 
@@ -207,10 +224,10 @@ if data is document.cache:
 Setting the `readonly` parameter to `True` prevents the running application from accidentally modifying the content of a document:
 
 ```python
-from shared import Document
+from shared.document.json import JsonDocument
 
 # access 'my-data.json'
-document = Document("my-data.json", readonly=True)
+document = JsonDocument("my-data.json", readonly=True)
 
 # when you set readonly to True, you can no longer edit the content !
 # shared.ReadonlyError will be raised if you try to mess with a readonly document
@@ -221,10 +238,10 @@ document = Document("my-data.json", readonly=True)
 You can delete the underlying file of a document (assuming the file isn't in readonly mode):
 
 ```python
-from shared import Document
+from shared.document.json import JsonDocument
 
 # access 'my-data.json'
-document = Document("my-data.json")
+document = JsonDocument("my-data.json")
 
 # delete 'my-data.json'
 document.delete()
@@ -234,31 +251,31 @@ if document.deleted:
 ```
 
 ## Convenience functions
-Four convenience functions are available for the `Document` class:
+Four convenience functions are available for the `JsonDocument` class (also for the `JesthDocument` class):
 
 ```python
-from shared import create, readonly, write, autosave
+from shared.document.json import json_create, json_readonly, json_write, json_autosave
 
 # quickly create a document
 DEFAULT = ["red", "violet"]
-create("my-data.json", default=DEFAULT)
+json_create("my-data.json", default=DEFAULT)
 
 # quickly open a document in readonly mode
-data = readonly("my-data.json")
+data = json_readonly("my-data.json")
 
 # quickly change the content of a document
 data = ["red", "green"]
-write("my-data.json", data)
+json_write("my-data.json", data)
 
 # quickly read the content of a document in autosave mode
-data = autosave("my-data.json")
+data = json_autosave("my-data.json")
 data.append("blue")  # data will be automatically saved on exit
 ```
 
 ## Conclusion
 For individual access to [Jesth](https://github.com/pyrustic/jesth#readme) and [JSON](https://en.wikipedia.org/wiki/JSON) files that are likely to be **manually edited by a human**, the `Document` class is the recommended interface.
 
-For more technical details about this class, read its [reference documentation](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/classes/Document.md#class-document).
+For more technical details about this class and the subclasses `JesthDocument` and `JsonDocument`, read the [reference documentation](https://github.com/pyrustic/shared/tree/master/docs/modules#readme).
 
 # Dossier
 The `Dossier` class stores collections (**list**, **dict**, **set**) and **binary data** with a unified interface inside a [dossier](https://dictionary.cambridge.org/dictionary/english/dossier). **Shared** allows to read and write a dossier not only programmatically but also from the [command line](#command-line-interface).
@@ -550,6 +567,8 @@ This entry doesn't exist.
 ## Delete a dossier
 Right-click on the folder with your mouse, then send it safely to the trash... ;)
 
+# Miscellaneous
+In June 2022, **Shared** [entered](https://zenodo.org/record/6786416) the [top 5000](https://hugovk.github.io/top-pypi-packages/) **most downloaded** Python packages on [PyPI](https://pypi.org) over 30 days for the **first time**.
 
 # Installation
 **Shared** is **cross platform** and versions under **1.0.0** will be considered **Beta** at best. It should work on **Python 3.5** or [newer](https://www.python.org/downloads/).
@@ -564,6 +583,11 @@ $ pip install shared
 ```bash
 $ pip install shared --upgrade --upgrade-strategy eager
 
+```
+
+## Show information
+```bash
+$ pip show shared
 ```
 
 
