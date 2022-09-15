@@ -15,7 +15,7 @@ def jesth_readonly(target, *, default=None, directory=DEFAULT_DIRECTORY,
                    compact=False, split_body=True):
     """Convenience function to open a document in readonly mode. It returns the data"""
     document = JesthDocument(target, default=default, autosave=False,
-                             readonly=False, caching=False,
+                             readonly=True, caching=False,
                              directory=directory, temporary=False,
                              compact=compact, split_body=split_body)
     data = document.read()

@@ -8,7 +8,7 @@ from shared.constant import DEFAULT_DIRECTORY
 from shared import error, dto, util
 
 
-class Database:  # TODO: add "temporary" and turn name into target
+class Database:
     """
     Definition of the Database class
     """

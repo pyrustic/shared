@@ -14,7 +14,7 @@ def json_create(target, *, default=None, directory=DEFAULT_DIRECTORY):
 def json_readonly(target, *, default=None, directory=DEFAULT_DIRECTORY):
     """Convenience function to open a document in readonly mode. It returns the data"""
     document = JsonDocument(target, default=default, autosave=False,
-                            readonly=False, caching=False,
+                            readonly=True, caching=False,
                             directory=directory, temporary=False)
     data = document.read()
     document.close()
