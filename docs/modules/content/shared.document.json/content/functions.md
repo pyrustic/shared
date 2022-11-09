@@ -6,7 +6,7 @@ Back to [All Modules](https://github.com/pyrustic/shared/blob/master/docs/module
  
 No description
 
-> **Classes:** &nbsp; [JsonDocument](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared.document.json/content/classes/JsonDocument.md#class-jsondocument)
+> **Classes:** &nbsp; [JsonDoc](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared.document.json/content/classes/JsonDoc.md#class-jsondoc)
 >
 > **Functions:** &nbsp; [json\_autosave](#json_autosave) &nbsp;&nbsp; [json\_create](#json_create) &nbsp;&nbsp; [json\_readonly](#json_readonly) &nbsp;&nbsp; [json\_write](#json_write)
 >

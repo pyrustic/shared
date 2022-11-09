@@ -5,19 +5,19 @@ from shared.constant import DEFAULT_DIRECTORY
 
 def jesth_create(target, *, default=None, directory=DEFAULT_DIRECTORY):
     """Convenience function to create a document"""
-    document = JesthDocument(target, default=default, autosave=False,
-                             readonly=False, caching=False,
-                             directory=directory, temporary=False)
+    document = JesthDoc(target, default=default, autosave=False,
+                        readonly=False, caching=False,
+                        directory=directory, temporary=False)
     document.close()
 
 
 def jesth_readonly(target, *, default=None, directory=DEFAULT_DIRECTORY,
                    compact=False, split_body=True):
     """Convenience function to open a document in readonly mode. It returns the data"""
-    document = JesthDocument(target, default=default, autosave=False,
-                             readonly=True, caching=False,
-                             directory=directory, temporary=False,
-                             compact=compact, split_body=split_body)
+    document = JesthDoc(target, default=default, autosave=False,
+                        readonly=True, caching=False,
+                        directory=directory, temporary=False,
+                        compact=compact, split_body=split_body)
     data = document.read()
     document.close()
     return data
@@ -25,9 +25,9 @@ def jesth_readonly(target, *, default=None, directory=DEFAULT_DIRECTORY,
 
 def jesth_write(target, data, *, directory=DEFAULT_DIRECTORY):
     """Convenience function to open a document then write data inside"""
-    document = JesthDocument(target, default=None, autosave=False,
-                             readonly=False, caching=False,
-                             directory=directory, temporary=False)
+    document = JesthDoc(target, default=None, autosave=False,
+                        readonly=False, caching=False,
+                        directory=directory, temporary=False)
     document.write(data)
     document.close()
 
@@ -35,14 +35,14 @@ def jesth_write(target, data, *, directory=DEFAULT_DIRECTORY):
 def jesth_autosave(target, *, default=None, directory=DEFAULT_DIRECTORY,
                    compact=False, split_body=True):
     """Convenience function to open a document in autosave mode. It returns data"""
-    document = JesthDocument(target, default=default, autosave=True,
-                             readonly=False, caching=True,
-                             directory=directory, temporary=False,
-                             compact=compact, split_body=split_body)
+    document = JesthDoc(target, default=default, autosave=True,
+                        readonly=False, caching=True,
+                        directory=directory, temporary=False,
+                        compact=compact, split_body=split_body)
     return document.read()
 
 
-class JesthDocument(Document):
+class JesthDoc(Document):
     def __init__(self, target, *, default=None,
                  autosave=False, readonly=False,
                  caching=True, directory=DEFAULT_DIRECTORY,

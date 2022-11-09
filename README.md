@@ -42,7 +42,7 @@ Although a lightweight package, **Shared** smoothly handles collections (**dict*
 |`Dossier`|To store collections and binary data in a dossier **without worrying about how they are actually saved**.|
 |`Database`|For an intuitive interaction with [SQLite](https://www.sqlite.org) **databases**.|
 
-> **Note:** The `Document` class is not intended to be used directly. Instead, depending on the requirement, one will use the `JsonDocument` or `JesthDocument` class which subclasses the `Document` class.
+> **Note:** The `Document` class is not intended to be used directly. Instead, depending on the requirement, one will use the `JsonDoc` or `JesthDoc` class which subclasses the `Document` class.
 
 ## Some characteristics
 Since all three classes share similar interfaces, some handy functionality has been replicated in all of them with a few exceptions.
@@ -68,19 +68,18 @@ Let's explore the [Document](#document), [Dossier](#dossier), and [Database](#da
 # Document
 The `Document` class represents an interface for reading and writing an underlying file whose format is either [Jesth](https://github.com/pyrustic/jesth#readme) or [JSON](https://en.wikipedia.org/wiki/JSON).
 
-As stated previously in the [Overview](#overview) section, the `Document` class is not intended to be used directly. Instead, depending on the requirement, one will use the `JsonDocument` or `JesthDocument` class which subclasses the `Document` class. 
+As stated previously in the [Overview](#overview) section, the `Document` class is not intended to be used directly. Instead, depending on the requirement, one will use the `JsonDoc` or `JesthDoc` class which subclasses the `Document` class. 
 
-Since **JSON** is very popular, we will focus on the `JsonDocument` class in the following examples.
+Since **JSON** is very popular, we will focus on the `JsonDoc` class in the following examples.
 
 Accessing a document or creating a new one is as simple as this:
 
 ```python
-from shared import JsonDocument
-
+from shared import JsonDoc
 
 # Create a new document instance which will be linked to the 'my-data.json' file.
 # If this file doesn't exist yet, it will be automatically created
-document = JsonDocument("my-data.json")
+document = JsonDoc("my-data.json")
 
 # From now, we can use 'document' to read and write the contents of 'my-data.json' !
 # ...
@@ -97,10 +96,10 @@ A document can be initialized with a conditional statement or by defining defaul
 It's as simple as testing a boolean to check if the underlying document file is newly created or not:
 
 ```python
-from shared import JsonDocument
+from shared import JsonDoc
 
 # access 'my-data.json'
-document = JsonDocument("my-data.json")
+document = JsonDoc("my-data.json")
 
 # let's initialize the content of 'my-data.json'
 if document.new:
@@ -112,13 +111,13 @@ if document.new:
 The most elegant, less verbose and recommended way to initialize a document is to set some default data to the `default` parameter:
 
 ```python
-from shared import JsonDocument
+from shared import JsonDoc
 
 # default data to init the file 'my-data.json'
 DEFAULT_DATA = {"name": "alex", "job": "evangelist"}
 
 # access 'my-data.json'
-document = JsonDocument("my-data.json", default=DEFAULT_DATA)
+document = JsonDoc("my-data.json", default=DEFAULT_DATA)
 
 # From now, thanks to the initialization functionality, the underlying
 # document contains the default data, assuming that 'my-data.json'
@@ -134,12 +133,12 @@ The optional `directory` parameter exists to supplement the `target` value when 
 By default, document files are saved in `$HOME/PyrusticHome/shared`. You can change the location according to your needs:
 
 ```python
-from shared import JsonDocument
+from shared import JsonDoc
 
 DIRECTORY = "/home/alex/private"
 
 # access 'my-data.json'
-document = JsonDocument("my-data.json", directory=DIRECTORY)
+document = JsonDoc("my-data.json", directory=DIRECTORY)
 
 # From now, you can access these properties:
 #   document.name == "my-data.json"
@@ -152,12 +151,12 @@ document = JsonDocument("my-data.json", directory=DIRECTORY)
 You can set an absolute path as the target. In this case, the `Document` class ignores the `directory` parameter.
 
 ```python
-from shared import JsonDocument
+from shared import JsonDoc
 
 pathname = "/home/alex/private/my-data.json"
 
 # access 'my-data.json'
-document = JsonDocument(pathname)
+document = JsonDoc(pathname)
 
 # From now, you can access these properties:
 #   document.name == "my-data.json"
@@ -169,10 +168,10 @@ document = JsonDocument(pathname)
 Setting the `temporary` boolean can enable temporary mode, so a document can only be created and used while the application is running, and then safely deleted when the application closes:
 
 ```python
-from shared import JsonDocument
+from shared import JsonDoc
 
 # access 'my-data.json'
-document = JsonDocument("my-data.json", temporary=True)
+document = JsonDoc("my-data.json", temporary=True)
 
 # This document will be created in a temporary directory
 # then it will be safely deleted when the application closes
@@ -187,10 +186,10 @@ Thanks to [atexit](https://docs.python.org/3/library/atexit.html) module, `Docum
 
 ```python
 import sys
-from shared import JsonDocument
+from shared import JsonDoc
 
 # access 'my-config.json' with `autosave` mode enabled
-document = JsonDocument("my-config.json", autosave=True, default=[])
+document = JsonDoc("my-config.json", autosave=True, default=[])
 # load the data
 data = document.read()
 
@@ -206,12 +205,12 @@ Along with `atexit` module, the `Document` class also uses a caching mechanism t
 By default, `caching` mode is enabled, so the user can access cached data through the `cache` property of an instance of the `Document` class:
 
 ```python
-from shared import JsonDocument
+from shared import JsonDoc
 
 DEFAULT_DATA = {"name": "alex", "job": "evangelist"}
 
 # access 'my-config.json'
-document = JsonDocument("my-config.json", caching=True, default=DEFAULT_DATA)
+document = JsonDoc("my-config.json", caching=True, default=DEFAULT_DATA)
 
 data = document.read()
 
@@ -223,10 +222,10 @@ if data is document.cache:
 Setting the `readonly` parameter to `True` prevents the running application from accidentally modifying the content of a document:
 
 ```python
-from shared import JsonDocument
+from shared import JsonDoc
 
 # access 'my-data.json'
-document = JsonDocument("my-data.json", readonly=True)
+document = JsonDoc("my-data.json", readonly=True)
 
 # when you set readonly to True, you can no longer edit the content !
 # shared.ReadonlyError will be raised if you try to mess with a readonly document
@@ -237,10 +236,10 @@ document = JsonDocument("my-data.json", readonly=True)
 You can delete the underlying file of a document (assuming the file isn't in readonly mode):
 
 ```python
-from shared import JsonDocument
+from shared import JsonDoc
 
 # access 'my-data.json'
-document = JsonDocument("my-data.json")
+document = JsonDoc("my-data.json")
 
 # delete 'my-data.json'
 document.delete()
@@ -250,7 +249,7 @@ if document.deleted:
 ```
 
 ## Convenience functions
-Four convenience functions are available for the `JsonDocument` class (also for the `JesthDocument` class):
+Four convenience functions are available for the `JsonDoc` class (also for the `JesthDoc` class):
 
 ```python
 from shared import json_create, json_readonly, json_write, json_autosave
@@ -274,7 +273,7 @@ data.append("blue")  # data will be automatically saved on exit
 ## Recapitulation
 For individual access to [Jesth](https://github.com/pyrustic/jesth#readme) and [JSON](https://en.wikipedia.org/wiki/JSON) files that are likely to be **manually edited by a human**, the `Document` class is the recommended interface.
 
-For more technical details about this class and the subclasses `JesthDocument` and `JsonDocument`, read the [reference documentation](https://github.com/pyrustic/shared/tree/master/docs/modules#readme).
+For more technical details about this class and the subclasses `JesthDoc` and `JsonDoc`, read the [reference documentation](https://github.com/pyrustic/shared/tree/master/docs/modules#readme).
 
 # Dossier
 The `Dossier` class stores collections (**list**, **dict**, **set**) and **binary data** with a unified interface inside a [dossier](https://dictionary.cambridge.org/dictionary/english/dossier). **Shared** allows to read and write a dossier not only programmatically but also from the [command line](#command-line-interface).

@@ -5,17 +5,17 @@ from shared.constant import DEFAULT_DIRECTORY
 
 def json_create(target, *, default=None, directory=DEFAULT_DIRECTORY):
     """Convenience function to create a document"""
-    document = JsonDocument(target, default=default, autosave=False,
-                            readonly=False, caching=False,
-                            directory=directory, temporary=False)
+    document = JsonDoc(target, default=default, autosave=False,
+                       readonly=False, caching=False,
+                       directory=directory, temporary=False)
     document.close()
 
 
 def json_readonly(target, *, default=None, directory=DEFAULT_DIRECTORY):
     """Convenience function to open a document in readonly mode. It returns the data"""
-    document = JsonDocument(target, default=default, autosave=False,
-                            readonly=True, caching=False,
-                            directory=directory, temporary=False)
+    document = JsonDoc(target, default=default, autosave=False,
+                       readonly=True, caching=False,
+                       directory=directory, temporary=False)
     data = document.read()
     document.close()
     return data
@@ -23,22 +23,22 @@ def json_readonly(target, *, default=None, directory=DEFAULT_DIRECTORY):
 
 def json_write(target, data, *, directory=DEFAULT_DIRECTORY):
     """Convenience function to open a document then write data inside"""
-    document = JsonDocument(target, default=None, autosave=False,
-                            readonly=False, caching=False,
-                            directory=directory, temporary=False)
+    document = JsonDoc(target, default=None, autosave=False,
+                       readonly=False, caching=False,
+                       directory=directory, temporary=False)
     document.write(data)
     document.close()
 
 
 def json_autosave(target, *, default=None, directory=DEFAULT_DIRECTORY):
     """Convenience function to open a document in autosave mode. It returns data"""
-    document = JsonDocument(target, default=default, autosave=True,
-                            readonly=False, caching=True,
-                            directory=directory, temporary=False)
+    document = JsonDoc(target, default=default, autosave=True,
+                       readonly=False, caching=True,
+                       directory=directory, temporary=False)
     return document.read()
 
 
-class JsonDocument(Document):
+class JsonDoc(Document):
     def __init__(self, target, *, default=None,
                  autosave=False, readonly=False,
                  caching=True, directory=DEFAULT_DIRECTORY,
