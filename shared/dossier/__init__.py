@@ -351,7 +351,7 @@ class Dossier:
 
     def _ensure_data(self, data):
         if isinstance(data, pathlib.Path):
-            with open(data.resolve(), "rb") as file:
+            with open(str(data.resolve()), "rb") as file:
                 return file.read()
         return data
 

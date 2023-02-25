@@ -410,7 +410,7 @@ class Database:
         if isinstance(script, str):
             return script
         if isinstance(script, pathlib.Path):
-            pathname = script.resolve()
+            pathname = str(script.resolve())
             with open(pathname, "r") as file:
                 return file.read()
         # if script is a file-like object

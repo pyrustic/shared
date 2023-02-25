@@ -566,7 +566,7 @@ This entry doesn't exist.
 Right-click on the folder with your mouse, then send it safely to the trash... ;)
 
 # Miscellaneous
-In June 2022, **Shared** [entered](https://zenodo.org/record/6786416) the [top 5000](https://hugovk.github.io/top-pypi-packages/) **most downloaded** Python packages on [PyPI](https://pypi.org) over 30 days for the **first time**.
+
 
 # Installation
 **Shared** is **cross platform** and versions under **1.0.0** will be considered **Beta** at best. It should work on **Python 3.5** or [newer](https://www.python.org/downloads/).

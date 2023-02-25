@@ -26,7 +26,7 @@ def check_target(target, directory, temporary):
         target = pathlib.Path(target)
     # update directory variable
     if target.is_absolute():
-        directory = target.parent
+        directory = str(target.parent)
     # process temporary parameter
     tempdir = None
     if temporary:
