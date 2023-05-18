@@ -5,11 +5,6 @@
 The Shared Data Interface
 
 
-[shared.document.jesth](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared.document.jesth/README.md#module-overview)
-<br>
-No description
-
-
 [shared.document.json](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared.document.json/README.md#module-overview)
 <br>
 No description

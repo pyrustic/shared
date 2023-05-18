@@ -38,11 +38,11 @@ Although a lightweight package, **Shared** smoothly handles collections (**dict*
 
 |Class|Relevance|
 |---|---|
-|`Document`|For individual access to [Jesth](https://github.com/pyrustic/jesth#readme) and [JSON](https://en.wikipedia.org/wiki/JSON) files that are likely to be **manually edited by a human**.|
+|`Document`|For individual access to [JSON](https://en.wikipedia.org/wiki/JSON) files that are likely to be **manually edited by a human**.|
 |`Dossier`|To store collections and binary data in a dossier **without worrying about how they are actually saved**.|
 |`Database`|For an intuitive interaction with [SQLite](https://www.sqlite.org) **databases**.|
 
-> **Note:** The `Document` class is not intended to be used directly. Instead, depending on the requirement, one will use the `JsonDoc` or `JesthDoc` class which subclasses the `Document` class.
+> **Note:** The `Document` class is not intended to be used directly. Instead, depending on the requirement, one will use the `JsonDoc` class which subclasses the `Document` class.
 
 ## Some characteristics
 Since all three classes share similar interfaces, some handy functionality has been replicated in all of them with a few exceptions.
@@ -66,9 +66,9 @@ Among the three classes, `Dossier` is the class of which a single instance can h
 Let's explore the [Document](#document), [Dossier](#dossier), and [Database](#database) classes in the next sections !
 
 # Document
-The `Document` class represents an interface for reading and writing an underlying file whose format is either [Jesth](https://github.com/pyrustic/jesth#readme) or [JSON](https://en.wikipedia.org/wiki/JSON).
+The `Document` class represents an interface for reading and writing an underlying file whose format is [JSON](https://en.wikipedia.org/wiki/JSON).
 
-As stated previously in the [Overview](#overview) section, the `Document` class is not intended to be used directly. Instead, depending on the requirement, one will use the `JsonDoc` or `JesthDoc` class which subclasses the `Document` class. 
+As stated previously in the [Overview](#overview) section, the `Document` class is not intended to be used directly. Instead, depending on the requirement, one will use the `JsonDoc` class which subclasses the `Document` class. 
 
 Since **JSON** is very popular, we will focus on the `JsonDoc` class in the following examples.
 
@@ -249,7 +249,7 @@ if document.deleted:
 ```
 
 ## Convenience functions
-Four convenience functions are available for the `JsonDoc` class (also for the `JesthDoc` class):
+Four convenience functions are available for the `JsonDoc` class:
 
 ```python
 from shared import json_create, json_readonly, json_write, json_autosave
@@ -271,9 +271,9 @@ data.append("blue")  # data will be automatically saved on exit
 ```
 
 ## Recapitulation
-For individual access to [Jesth](https://github.com/pyrustic/jesth#readme) and [JSON](https://en.wikipedia.org/wiki/JSON) files that are likely to be **manually edited by a human**, the `Document` class is the recommended interface.
+For individual access to [JSON](https://en.wikipedia.org/wiki/JSON) files that are likely to be **manually edited by a human**, the `Document` class is the recommended interface.
 
-For more technical details about this class and the subclasses `JesthDoc` and `JsonDoc`, read the [reference documentation](https://github.com/pyrustic/shared/tree/master/docs/modules#readme).
+For more technical details about this class and the subclasses `JsonDoc`, read the [reference documentation](https://github.com/pyrustic/shared/tree/master/docs/modules#readme).
 
 # Dossier
 The `Dossier` class stores collections (**list**, **dict**, **set**) and **binary data** with a unified interface inside a [dossier](https://dictionary.cambridge.org/dictionary/english/dossier). **Shared** allows to read and write a dossier not only programmatically but also from the [command line](#command-line-interface).

@@ -6,9 +6,9 @@ Back to [All Modules](https://github.com/pyrustic/shared/blob/master/docs/module
  
 The Shared Data Interface
 
-> **Classes:** &nbsp; [Database](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/classes/Database.md#class-database) &nbsp;&nbsp; [Document](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/classes/Document.md#class-document) &nbsp;&nbsp; [Dossier](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/classes/Dossier.md#class-dossier) &nbsp;&nbsp; [JesthDoc](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/classes/JesthDoc.md#class-jesthdoc) &nbsp;&nbsp; [JsonDoc](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/classes/JsonDoc.md#class-jsondoc)
+> **Classes:** &nbsp; [Database](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/classes/Database.md#class-database) &nbsp;&nbsp; [Document](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/classes/Document.md#class-document) &nbsp;&nbsp; [Dossier](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/classes/Dossier.md#class-dossier) &nbsp;&nbsp; [JsonDoc](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/classes/JsonDoc.md#class-jsondoc)
 >
-> **Functions:** &nbsp; [get\_key\_value](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/functions.md#get_key_value) &nbsp;&nbsp; [jesth\_autosave](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/functions.md#jesth_autosave) &nbsp;&nbsp; [jesth\_create](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/functions.md#jesth_create) &nbsp;&nbsp; [jesth\_readonly](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/functions.md#jesth_readonly) &nbsp;&nbsp; [jesth\_write](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/functions.md#jesth_write) &nbsp;&nbsp; [json\_autosave](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/functions.md#json_autosave) &nbsp;&nbsp; [json\_create](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/functions.md#json_create) &nbsp;&nbsp; [json\_readonly](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/functions.md#json_readonly) &nbsp;&nbsp; [json\_write](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/functions.md#json_write)
+> **Functions:** &nbsp; [json\_autosave](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/functions.md#json_autosave) &nbsp;&nbsp; [json\_create](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/functions.md#json_create) &nbsp;&nbsp; [json\_readonly](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/functions.md#json_readonly) &nbsp;&nbsp; [json\_write](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/functions.md#json_write)
 >
 > **Constants:** &nbsp; DEFAULT_DIRECTORY
 
@@ -47,7 +47,6 @@ Init.
 
 
 
-
 **Signature:** (self, target, \*, autosave=False, readonly=False, caching=True, directory='/home/alex/PyrusticHome/shared', temporary=False)
 
 |Parameter|Description|
@@ -73,12 +72,11 @@ Return basic information about the dossier or a specific entry
 
 
 
-
 **Signature:** (self, name=None)
 
 |Parameter|Description|
 |---|---|
-|name|the name of the specific entry to check. If name is set to None, basic information about the dossier will be returned |
+|name|the name of the specific entry to check. If name is set to None, basic information about the dossier will be returned|
 
 
 
@@ -113,12 +111,11 @@ Else, the arguments are the entries to delete.
 
 
 
-
 **Signature:** (self, \*names)
 
 |Parameter|Description|
 |---|---|
-|\*names|names of entries to delete. If you don't set a name, the dossier will be deleted |
+|\*names|names of entries to delete. If you don't set a name, the dossier will be deleted|
 
 
 
@@ -134,13 +131,12 @@ Get an entry.
 
 
 
-
 **Signature:** (self, name, default=None)
 
 |Parameter|Description|
 |---|---|
 |name|the name of the entry.|
-|default|a dict, a list, a set or binary data that will replace a non-existent entry |
+|default|a dict, a list, a set or binary data that will replace a non-existent entry|
 
 
 
@@ -158,13 +154,12 @@ Set an entry.
 
 
 
-
 **Signature:** (self, name, data)
 
 |Parameter|Description|
 |---|---|
 |name|str, the name of the entry|
-|data|a dict, a list, a set, binary data, or an instance of pathlib.Path |
+|data|a dict, a list, a set, binary data, or an instance of pathlib.Path|
 
 
 

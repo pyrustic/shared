@@ -48,7 +48,6 @@ Init.
 
 
 
-
 **Signature:** (self, target, \*, default=None, autosave=False, readonly=False, caching=True, directory='/home/alex/PyrusticHome/shared', temporary=False)
 
 |Parameter|Description|
