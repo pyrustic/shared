@@ -4,7 +4,7 @@
 
 <!-- Cover -->
 <div align="center">
-    <img src="https://raw.githubusercontent.com/pyrustic/misc/master/assets/shared/cover.png" alt="Cover" width="700">
+    <img src="https://raw.githubusercontent.com/pyrustic/misc/master/assets/shared/cover.png" alt="Cover" width="630">
     <p align="center">
     <i> </i>
     </p>
