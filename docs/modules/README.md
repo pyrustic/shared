@@ -5,18 +5,13 @@
 The Shared Data Interface
 
 
-[shared.document.json](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared.document.json/README.md#module-overview)
-<br>
-No description
-
-
-[shared.dto](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared.dto/README.md#module-overview)
-<br>
-Classes for Data Transfer Objects
-
-
 [shared.error](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared.error/README.md#module-overview)
 <br>
 Errors classes
+
+
+[shared.misc](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared.misc/README.md#module-overview)
+<br>
+This module is private ! Don't use it !
 
 

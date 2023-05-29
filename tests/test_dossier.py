@@ -1,9 +1,111 @@
 import unittest
+import tempfile
+from jesth.converter import create_dict
+from shared import Dossier
 
 
-class MyTestCase(unittest.TestCase):
-    def test_something(self):
-        self.assertEqual(True, True)
+DATA = r"""
+# strings
+string = "Hello "World" ! \\ \n \\n \\u000A ˫"
+raw_string = 'Hello 'World' ! \n \\n \u000A ˫'
+empty_string = ""
+empty_raw_string = ''
+
+# scalars
+int = -4_200_000
+hex_int = 0xAE1F
+oct_int = 0o3427
+bin_int = 0b101_0011_1010_1010
+float = 3.141
+decimal_float = 3.141_592_653_589_793_238_46E-10
+complex = -4.2+6.9i
+bool_1 = true
+bool_2 = false
+
+# null value
+empty_value = null
+
+# date and time (ISO 8601)
+datetime = 2020-10-20T15:35:57Z
+date = 2020-10-20
+time = 15:35:57
+
+# text
+text = (text)
+    Stand a little less \\n
+    between me and the sun. ˫
+    ---
+empty_text = (text)
+    ---
+
+# raw text
+raw = (raw)
+    The foundation of every state
+    is the education of its youth. ˫
+    \u000A - WYSIWYG - C:\home\alex
+    ---
+empty_raw = (raw)
+    ---
+
+# bin data (standard base64 - RFC 4648)
+bin = (bin)
+    TG9yZW0gaXBzdW0gZG9sb3Igc2l0IGFtZXQsIGNvbnNlY3RldHVyIGFkaXBpc2NpbmcgZWxpdCwg
+    c2VkIGRvIGVpdXNtb2QgdGVtcG9yIGluY2lkaWR1bnQgdXQgbGFib3JlIGV0IGRvbG9yZSBtYWduY
+    SBhbGlxdWEu
+    ---
+empty_bin = (bin)
+    ---
+
+# list collection
+list = (list)
+    "Item 1"
+    "Item 2"
+    "Item 3"
+    # nested list
+    (list)
+        "item i"
+        "item ii"
+        "item iii"
+empty_list = (list)
+
+# dict collection
+dict = (dict)
+    key_1 = "value"
+    key_2 = (list)
+        "item i"
+        "item ii"
+        # nested dict
+        (dict)
+            project = "Jesth: Just Extract Sections Then Hack !"
+            description = "Next level human-readable data serialization format"
+            repository = 'https://github.com/pyrustic/jesth'
+            author = "alex rustic"
+empty_dict = (dict)
+"""
+
+
+class TestDossierGetSet(unittest.TestCase):
+    def setUp(self):
+        self._tempdir = tempfile.TemporaryDirectory()
+        self._path = self._tempdir.name
+
+    def tearDown(self):
+        # the Try/Except is needed here because I can only
+        # benefit from the constructor's "ignore_cleanup_errors=True"
+        # in Python 3.10
+        try:
+            self._tempdir.cleanup()
+        except Exception as e:
+            pass
+
+    def test_get_set_methods(self):
+        from jesth import ValueConverter
+        from collections import OrderedDict
+        data = create_dict(DATA, strict=True)
+        dossier = Dossier(self._path)
+        dossier.set("data_entry", data)
+        r = dossier.get("data_entry")
+        self.assertEqual(data, r)
 
 
 if __name__ == '__main__':

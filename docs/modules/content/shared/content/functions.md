@@ -6,76 +6,13 @@ Back to [All Modules](https://github.com/pyrustic/shared/blob/master/docs/module
  
 The Shared Data Interface
 
-> **Classes:** &nbsp; [Database](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/classes/Database.md#class-database) &nbsp;&nbsp; [Document](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/classes/Document.md#class-document) &nbsp;&nbsp; [Dossier](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/classes/Dossier.md#class-dossier) &nbsp;&nbsp; [JsonDoc](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/classes/JsonDoc.md#class-jsondoc)
+> **Classes:** &nbsp; [Dossier](https://github.com/pyrustic/shared/blob/master/docs/modules/content/shared/content/classes/Dossier.md#class-dossier)
 >
-> **Functions:** &nbsp; [json\_autosave](#json_autosave) &nbsp;&nbsp; [json\_create](#json_create) &nbsp;&nbsp; [json\_readonly](#json_readonly) &nbsp;&nbsp; [json\_write](#json_write)
+> **Functions:** &nbsp; None
 >
-> **Constants:** &nbsp; DEFAULT_DIRECTORY
+> **Constants:** &nbsp; HOME
 
 # All Functions
-[json\_autosave](#json_autosave) &nbsp;&nbsp; [json\_create](#json_create) &nbsp;&nbsp; [json\_readonly](#json_readonly) &nbsp;&nbsp; [json\_write](#json_write)
 
-## json\_autosave
-Convenience function to open a document in autosave mode. It returns data
-
-
-
-**Signature:** (target, \*, default=None, directory='/home/alex/PyrusticHome/shared')
-
-
-
-
-
-**Return Value:** None
-
-[Back to Top](#module-overview)
-
-
-## json\_create
-Convenience function to create a document
-
-
-
-**Signature:** (target, \*, default=None, directory='/home/alex/PyrusticHome/shared')
-
-
-
-
-
-**Return Value:** None
-
-[Back to Top](#module-overview)
-
-
-## json\_readonly
-Convenience function to open a document in readonly mode. It returns the data
-
-
-
-**Signature:** (target, \*, default=None, directory='/home/alex/PyrusticHome/shared')
-
-
-
-
-
-**Return Value:** None
-
-[Back to Top](#module-overview)
-
-
-## json\_write
-Convenience function to open a document then write data inside
-
-
-
-**Signature:** (target, data, \*, directory='/home/alex/PyrusticHome/shared')
-
-
-
-
-
-**Return Value:** None
-
-[Back to Top](#module-overview)
 
 
