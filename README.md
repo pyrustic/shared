@@ -1,6 +1,6 @@
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PyPI package version](https://img.shields.io/pypi/v/shared)](https://pypi.org/project/shared)
-[![Downloads](https://pepy.tech/badge/shared)](https://pepy.tech/project/shared)
 
 <!-- Cover -->
 <div align="center">
@@ -42,7 +42,7 @@ from pathlib import Path
 with open("/home/alex/image.png", "rb") as file:
     photo = file.read()
 
-# create a profile dictionary
+# create an user profile dictionary embedding the picture
 now = datetime.now()
 profile = {"name": "alex", "access_datetime": now, "photo": photo,
            "pi": Decimal("3.14"), "books": ["Seul sur Mars", "The Fall"],

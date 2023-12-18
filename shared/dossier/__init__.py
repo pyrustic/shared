@@ -11,6 +11,7 @@ class Dossier:
     def __init__(self, path, value_converter=None):
         self._path = str(pathlib.Path(path).resolve())
         self._value_converter = value_converter if value_converter else ValueConverter()
+        self._schema = None
         self._setup()
 
     @property
@@ -30,6 +31,10 @@ class Dossier:
     @property
     def entries(self):
         return self._get_entries()
+        
+    @property
+    def schema(self):
+        return self._schema
 
     def get(self, entry, fallback=None):
         path = self.locate(entry)
@@ -79,6 +84,12 @@ class Dossier:
             return False
         return True
 
+    def bind_schema(self):
+        pass
+        
+    def unbind_schema(self):
+        self._schema = None
+    
     def destroy(self):
         if not self.exists:
             return False
