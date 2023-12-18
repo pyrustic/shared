@@ -27,12 +27,13 @@ No class attributes.
 |entries|getter|None||
 |exists|getter|None||
 |path|getter|None||
+|schema|getter|None||
 |value_converter|getter|None||
 
 
 
 # All Methods
-[\_\_init\_\_](#__init__) &nbsp;&nbsp; [delete](#delete) &nbsp;&nbsp; [destroy](#destroy) &nbsp;&nbsp; [get](#get) &nbsp;&nbsp; [locate](#locate) &nbsp;&nbsp; [rename](#rename) &nbsp;&nbsp; [set](#set) &nbsp;&nbsp; [\_ensure\_dossier](#_ensure_dossier) &nbsp;&nbsp; [\_get\_entries](#_get_entries) &nbsp;&nbsp; [\_save\_bin\_data](#_save_bin_data) &nbsp;&nbsp; [\_save\_data](#_save_data) &nbsp;&nbsp; [\_setup](#_setup)
+[\_\_init\_\_](#__init__) &nbsp;&nbsp; [bind\_schema](#bind_schema) &nbsp;&nbsp; [delete](#delete) &nbsp;&nbsp; [destroy](#destroy) &nbsp;&nbsp; [get](#get) &nbsp;&nbsp; [locate](#locate) &nbsp;&nbsp; [rename](#rename) &nbsp;&nbsp; [set](#set) &nbsp;&nbsp; [unbind\_schema](#unbind_schema) &nbsp;&nbsp; [\_ensure\_dossier](#_ensure_dossier) &nbsp;&nbsp; [\_get\_entries](#_get_entries) &nbsp;&nbsp; [\_save\_bin\_data](#_save_bin_data) &nbsp;&nbsp; [\_save\_data](#_save_data) &nbsp;&nbsp; [\_setup](#_setup)
 
 ## \_\_init\_\_
 Initialize self.  See help(type(self)) for accurate signature.
@@ -40,6 +41,22 @@ Initialize self.  See help(type(self)) for accurate signature.
 
 
 **Signature:** (self, path, value\_converter=None)
+
+
+
+
+
+**Return Value:** None
+
+[Back to Top](#module-overview)
+
+
+## bind\_schema
+No description
+
+
+
+**Signature:** (self)
 
 
 
@@ -136,6 +153,22 @@ No description
 
 
 **Signature:** (self, entry, data)
+
+
+
+
+
+**Return Value:** None
+
+[Back to Top](#module-overview)
+
+
+## unbind\_schema
+No description
+
+
+
+**Signature:** (self)
 
 
 
