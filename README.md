@@ -27,7 +27,7 @@ This project is part of the [Pyrustic Open Ecosystem](https://pyrustic.github.io
 # Overview
 **Shared** is a Python package created to be the programmer's companion when it comes to storing unstructured application data, managing configuration files, caching data, and exchanging data with other programs.
 
-Under the hood, Shared uses [Paradict](https://github.com/pyrustic/paradict) to encode **strings**, **scalars** (integer, float, decimal float, complex, booleans), **date** and **time**, **null** value, **binary** data and nested **collections** (list and dictionary).
+Under the hood, Shared uses [Paradict](https://github.com/pyrustic/paradict) to encode a dictionary populated with **strings**, **scalars** (integer, float, decimal float, complex, booleans), **date** and **time**, **null** value, **binary** data and nested **collections** (list, set, and dictionary).
 
 > **Note:** This library isn't intended to replace a proper relational database such as SQLite !
 
