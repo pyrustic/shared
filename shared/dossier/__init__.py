@@ -2,15 +2,15 @@
 import os
 import os.path
 import pathlib
-import jesth
-from jesth import ValueConverter
+import paradict
+from paradict import TypeRef
 from shared import misc
 
 
 class Dossier:
-    def __init__(self, path, value_converter=None):
+    def __init__(self, path, type_ref=None):
         self._path = str(pathlib.Path(path).resolve())
-        self._value_converter = value_converter if value_converter else ValueConverter()
+        self._type_ref = type_ref if type_ref else TypeRef()
         self._schema = None
         self._setup()
 
@@ -19,8 +19,8 @@ class Dossier:
         return self._path
 
     @property
-    def value_converter(self):
-        return self._value_converter
+    def type_ref(self):
+        return self._type_ref
 
     @property
     def exists(self):
@@ -37,17 +37,18 @@ class Dossier:
         return self._schema
 
     def get(self, entry, fallback=None):
+        fallback = fallback if fallback else dict()
         path = self.locate(entry)
         if not path:
             return fallback
-        document = jesth.read(path, value_converter=self._value_converter)
-        section = document.get("")  # get anonymous top section
-        r = section.to_dict(strict=True)
+        document = paradict.FileDoc(path, type_ref=self._type_ref)
+        r = document.get("")  # get anonymous top section
         if not r:
             return fallback
-        return r.get("data", fallback)
+        return r
 
     def set(self, entry, data):
+        # data is a dictionary
         # ensure_dossier
         self._ensure_dossier()
         path = os.path.join(self._path, entry)
@@ -122,7 +123,5 @@ class Dossier:
             file.write(data)
 
     def _save_data(self, path, data):
-        body = {"data": data}
-        doc = jesth.Document(path, value_converter=self._value_converter)
-        doc.set(index=0, header="", body=body)
-        doc.save()
+        doc = paradict.FileDoc(path, type_ref=self._type_ref)
+        doc.set("", data)

@@ -27,7 +27,7 @@ This project is part of the [Pyrustic Open Ecosystem](https://pyrustic.github.io
 # Overview
 **Shared** is a Python package created to be the programmer's companion when it comes to storing unstructured application data, managing configuration files, caching data, and exchanging data with other programs.
 
-Under the hood, Shared uses [Jesth](https://github.com/pyrustic/jesth) to encode **strings**, **scalars** (integer, float, decimal float, complex, booleans), **date** and **time**, **null** value, **binary** data and nested **collections** (list and dictionary).
+Under the hood, Shared uses [Paradict](https://github.com/pyrustic/paradict) to encode **strings**, **scalars** (integer, float, decimal float, complex, booleans), **date** and **time**, **null** value, **binary** data and nested **collections** (list and dictionary).
 
 > **Note:** This library isn't intended to replace a proper relational database such as SQLite !
 
@@ -35,17 +35,16 @@ Under the hood, Shared uses [Jesth](https://github.com/pyrustic/jesth) to encode
 ```python
 from shared import Dossier, HOME
 from datetime import datetime
-from decimal import Decimal
 from pathlib import Path
 
 # load a picture
 with open("/home/alex/image.png", "rb") as file:
     photo = file.read()
 
-# create an user profile dictionary embedding the picture
+# create a user profile dictionary embedding the picture
 now = datetime.now()
 profile = {"name": "alex", "access_datetime": now, "photo": photo,
-           "pi": Decimal("3.14"), "books": ["Seul sur Mars", "The Fall"],
+           "pi": 3.14, "books": ["Seul sur Mars", "The Fall"],
            "is_author": True, "fingerprint": None}
 
 # create a dossier (or access an existing one)
@@ -59,11 +58,11 @@ dossier.set("my_profile", profile)
 profile_bis = dossier.get("my_profile")
 
 # let's compare the two profile objects !
-assert profile == profile_bis  # True ;)
+assert profile == profile_bis
 ```
 
 # API
-Coming soon...
+Explore the source code.
 
 
 # Installation

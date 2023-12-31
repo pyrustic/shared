@@ -28,7 +28,7 @@ No class attributes.
 |exists|getter|None||
 |path|getter|None||
 |schema|getter|None||
-|value_converter|getter|None||
+|type_ref|getter|None||
 
 
 
@@ -40,7 +40,7 @@ Initialize self.  See help(type(self)) for accurate signature.
 
 
 
-**Signature:** (self, path, value\_converter=None)
+**Signature:** (self, path, type\_ref=None)
 
 
 

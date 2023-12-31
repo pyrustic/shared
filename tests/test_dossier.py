@@ -1,6 +1,6 @@
 import unittest
 import tempfile
-from jesth.converter import create_dict
+from paradict import Document
 from shared import Dossier
 
 
@@ -49,12 +49,13 @@ empty_raw = (raw)
 
 # bin data (standard base64 - RFC 4648)
 bin = (bin)
-    TG9yZW0gaXBzdW0gZG9sb3Igc2l0IGFtZXQsIGNvbnNlY3RldHVyIGFkaXBpc2NpbmcgZWxpdCwg
-    c2VkIGRvIGVpdXNtb2QgdGVtcG9yIGluY2lkaWR1bnQgdXQgbGFib3JlIGV0IGRvbG9yZSBtYWduY
-    SBhbGlxdWEu
-    ---
+    68 65 6C 6C 6F 20 77 6F 72 6C 64 20 68 65 6C 6C
+    6F 20 77 6F 72 6C 64 20 68 65 6C 6C 6F 20 77 6F
+    72 6C 64 20 68 65 6C 6C 6F 20 77 6F 72 6C 64 20
+    68 65 6C 6C 6F 20 77 6F 72 6C 64 20 68 65 6C 6C
+    6F 20 77 6F 72 6C 64 20 68 65 6C 6C 6F 20 77 6F
+    72 6C 64
 empty_bin = (bin)
-    ---
 
 # list collection
 list = (list)
@@ -99,9 +100,8 @@ class TestDossierGetSet(unittest.TestCase):
             pass
 
     def test_get_set_methods(self):
-        from jesth import ValueConverter
-        from collections import OrderedDict
-        data = create_dict(DATA, strict=True)
+        doc = Document(DATA)
+        data = doc.get("")
         dossier = Dossier(self._path)
         dossier.set("data_entry", data)
         r = dossier.get("data_entry")
