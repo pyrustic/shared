@@ -2,7 +2,7 @@
 import os
 import os.path
 import pathlib
-import paradict
+import braq
 from paradict import TypeRef
 from shared import misc
 
@@ -41,7 +41,7 @@ class Dossier:
         path = self.locate(entry)
         if not path:
             return fallback
-        document = paradict.FileDoc(path, type_ref=self._type_ref)
+        document = braq.FileDoc(path, type_ref=self._type_ref)
         r = document.get("")  # get anonymous top section
         if not r:
             return fallback
@@ -123,5 +123,5 @@ class Dossier:
             file.write(data)
 
     def _save_data(self, path, data):
-        doc = paradict.FileDoc(path, type_ref=self._type_ref)
+        doc = braq.FileDoc(path, type_ref=self._type_ref)
         doc.set("", data)

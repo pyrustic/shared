@@ -1,6 +1,6 @@
 import unittest
 import tempfile
-from paradict import Document
+from braq import Document
 from shared import Dossier
 
 
