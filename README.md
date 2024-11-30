@@ -4,7 +4,7 @@
 
 ⚠️⚠️   
 
-**Shared** is an experimental data exchange and persistence solution based on human-readable files. It serves as a playground to test new ideas and then create stable derivative projects. I recently built a **multi-model embedded database for persisting arbitrary-sized data.** The project is called **[Jinbase](https://github.com/pyrustic/jinbase/)** and I strongly encourage you to give it a [try](https://github.com/pyrustic/jinbase/).
+**Shared** is an experimental data exchange and persistence solution based on human-readable files. It serves as a playground to test new ideas and then create stable derivative projects. I recently built a **multi-model embedded database for persisting arbitrary-sized data.** The project is called **[Jinbase](https://github.com/pyrustic/jinbase/)** and I strongly encourage you to give it a **[try](https://github.com/pyrustic/jinbase/)**.
 
 ⚠️⚠️   
 
