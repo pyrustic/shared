@@ -34,7 +34,7 @@
 
 Under the hood, Shared uses [Paradict](https://github.com/pyrustic/paradict) to encode a dictionary populated with **strings**, **scalars** (integer, float, decimal float, complex, booleans), **date** and **time**, **null** value, **binary** data and nested **collections** (list, set, and dictionary).
 
-> **Note:** This library doesn't perform any synchronization and thus simultaneous access to a file might lead to data corruption. **For a safe, more robust persistence solution, please consider [Jinbase](https://github.com/pyrustic/jinbase).**
+> **Note:** This library does not implement any synchronization mechanisms to prevent simultaneous access to a file, which could lead to data corruption. **For a safe, more robust and rich persistence solution, please consider [Jinbase](https://github.com/pyrustic/jinbase).**
 
 # Example
 ```python
