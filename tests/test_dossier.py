@@ -86,7 +86,7 @@ empty_dict = (dict)
 """
 
 
-class TestDossierGetSet(unittest.TestCase):
+class TestDossier(unittest.TestCase):
 
     def setUp(self):
         self._tempdir = tempfile.TemporaryDirectory()
