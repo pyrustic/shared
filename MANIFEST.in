@@ -1,4 +1,3 @@
-recursive-include shared *
-global-exclude *.py[cod]
 include VERSION
-
+recursive-include src *
+global-exclude *.py[cod]

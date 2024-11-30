@@ -1,6 +1,7 @@
+import os.path
 import unittest
 import tempfile
-from braq import Document
+import paradict
 from shared import Dossier
 
 
@@ -86,9 +87,10 @@ empty_dict = (dict)
 
 
 class TestDossierGetSet(unittest.TestCase):
+
     def setUp(self):
         self._tempdir = tempfile.TemporaryDirectory()
-        self._path = self._tempdir.name
+        self._dossier = Dossier(self._tempdir.name)
 
     def tearDown(self):
         # the Try/Except is needed here because I can only
@@ -99,14 +101,45 @@ class TestDossierGetSet(unittest.TestCase):
         except Exception as e:
             pass
 
+    def test_keys(self):
+        r = self._dossier.keys()
+        expected = tuple()
+        self.assertEqual(expected, r)
+        self._dossier.set("key1", {"id": 42, "name": "alex"})
+        self._dossier.set("key2", {"id": 42, "name": "alex"})
+        r = self._dossier.keys()
+        expected = ("key1", "key2")
+        self.assertEqual(expected, r)
+
+    def test_exists_method(self):
+        self.assertTrue(self._dossier.exists())
+        self.assertFalse(self._dossier.exists("nonexistent-key"))
+        self._dossier.set("key1", {"id": 42, "name": "alex"})
+        self.assertTrue(self._dossier.exists("key1"))
+
+    def test_locate_method(self):
+        r = self._dossier.locate("nonexistent-key")
+        self.assertIsNone(r)
+        self._dossier.set("key1", {"id": 42, "name": "alex"})
+        r = self._dossier.locate("key1")
+        self.assertTrue(os.path.isfile(r))
+        self.assertTrue(os.path.isabs(r))
+
     def test_get_set_methods(self):
-        doc = Document(DATA)
-        data = doc.get("")
-        dossier = Dossier(self._path)
-        dossier.set("data_entry", data)
-        r = dossier.get("data_entry")
-        self.assertEqual(data, r)
+        my_dict = paradict.decode(DATA)
+        self._dossier.set("my-key", my_dict)
+        r = self._dossier.get("my-key")
+        expected = my_dict
+        self.assertEqual(expected, r)
+
+    def test_delete_method(self):
+        self.assertFalse(self._dossier.delete("nonexistent-key"))
+        self._dossier.set("key1", {"id": 42, "name": "alex"})
+        self._dossier.set("key2", {"id": 42, "name": "alex"})
+        self._dossier.delete("key1")
+        self.assertFalse(self._dossier.exists("key1"))
+        self.assertTrue(self._dossier.exists("key2"))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

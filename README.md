@@ -1,6 +1,13 @@
-
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PyPI package version](https://img.shields.io/pypi/v/shared)](https://pypi.org/project/shared)
+
+
+⚠️⚠️   
+
+**Shared** is an experimental data exchange and persistence solution based on human-readable files. It serves as a playground to test new ideas and then create stable derivative projects. I recently built a **multi-model embedded database for persisting arbitrary-sized data.** The project is called **[Jinbase](https://github.com/pyrustic/jinbase/)** and I strongly encourage you to give it a [try](https://github.com/pyrustic/jinbase/).
+
+⚠️⚠️   
+
 
 <!-- Cover -->
 <div align="center">
@@ -13,15 +20,13 @@
 
 
 # Pyrustic Shared
-**Data exchange and persistence**
-
-This project is part of the [Pyrustic Open Ecosystem](https://pyrustic.github.io).
-> [Installation](#installation) . [Latest](https://github.com/pyrustic/shared/tags) . [Modules](https://github.com/pyrustic/shared/tree/master/docs/modules#readme)
+**Experimental data exchange and persistence based on human-readable files**
 
 ## Table of contents
 - [Overview](#overview) 
 - [Example](#example) 
-- [API](#api)
+- [Related projects](#related-projects)
+- [Testing and contributing](#testing-and-contributing)
 - [Installation](#installation) 
 
 # Overview
@@ -29,7 +34,7 @@ This project is part of the [Pyrustic Open Ecosystem](https://pyrustic.github.io
 
 Under the hood, Shared uses [Paradict](https://github.com/pyrustic/paradict) to encode a dictionary populated with **strings**, **scalars** (integer, float, decimal float, complex, booleans), **date** and **time**, **null** value, **binary** data and nested **collections** (list, set, and dictionary).
 
-> **Note:** This library isn't intended to replace a proper relational database such as SQLite !
+> **Note:** This library doesn't perform any synchronization and thus simultaneous access to a file might lead to data corruption. **For a safe, more robust persistence solution, please consider [Jinbase](https://github.com/pyrustic/jinbase).**
 
 # Example
 ```python
@@ -58,16 +63,46 @@ dossier.set("my_profile", profile)
 profile_bis = dossier.get("my_profile")
 
 # let's compare the two profile objects !
-assert profile == profile_bis
+assert profile == profile_bis  # True ;)
 ```
 
-# API
-Explore the source code.
 
+# Related projects
+- [Jinbase](https://github.com/pyrustic/jinbase): Multi-model transactional embedded database
+- [LiteDBC](https://github.com/pyrustic/litedbc): Lite database connector
+- [KvF](https://github.com/pyrustic/kvf): The key-value file format with sections 
+- [Paradict](https://github.com/pyrustic/paradict): Streamable multi-format serialization with schema 
+- [Asyncpal](https://github.com/pyrustic/asyncpal): Preemptive concurrency and parallelism for sporadic workloads
+
+# Testing and contributing
+Feel free to **open an issue** to report a bug, suggest some changes, show some useful code snippets, or discuss anything related to this project. You can also directly email [me](https://pyrustic.github.io/#contact).
+
+## Setup your development environment
+Following are instructions to setup your development environment
+
+```bash
+# create and activate a virtual environment
+python -m venv venv
+source venv/bin/activate
+
+# clone the project then change into its directory
+git clone https://github.com/pyrustic/shared.git
+cd shared
+
+# install the package locally (editable mode)
+pip install -e .
+
+# run tests
+python -m tests
+
+# deactivate the virtual environment
+deactivate
+```
+
+<p align="right"><a href="#readme">Back to top</a></p>
 
 # Installation
-**Shared** is **cross platform**. It is built on [Ubuntu](https://ubuntu.com/download/desktop) with [Python 3.8](https://www.python.org/downloads/) and should work on **Python 3.5** or **newer**.
-
+**Shared** is **cross-platform**. It is built on [Ubuntu](https://ubuntu.com/download/desktop) and should work on **Python 3.5** or **newer**.
 
 ## Create and activate a virtual environment
 ```bash
@@ -91,8 +126,10 @@ pip install shared --upgrade --upgrade-strategy eager
 deactivate
 ```
 
+<p align="right"><a href="#readme">Back to top</a></p>
+
 # About the author
-Hi, I'm Alex, a tech enthusiast ! Get in touch with [me](https://pyrustic.github.io/#contact) ! 
+Hello world, I'm Alex (😎️), a tech enthusiast and the architect of [Pyrustic](https://pyrustic.github.io) ! Feel free to get in touch with [me](https://pyrustic.github.io/#contact) !
 
 <br>
 <br>
