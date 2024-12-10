@@ -20,7 +20,7 @@
 
 
 # Pyrustic Shared
-**Experimental data exchange and persistence based on human-readable files**
+**Data exchange and persistence based on human-readable files**
 
 ## Table of contents
 - [Overview](#overview) 
